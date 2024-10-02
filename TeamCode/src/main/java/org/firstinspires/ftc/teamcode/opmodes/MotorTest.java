@@ -93,7 +93,7 @@ public class MotorTest extends LinearOpMode {
             // Send telemetry message to signify robot running;
             telemetry.addData("power",  "%.2f", gamepad1.right_trigger);
 
-            double CPR = 537.6;
+            double CPR = 415.2;
 
             // Get the current position of the motor
             int position = one.getCurrentPosition();
