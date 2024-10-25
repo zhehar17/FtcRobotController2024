@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 /*
  * This OpMode executes a POV Game style Teleop for a direct drive robot
@@ -51,7 +52,8 @@ public class MechanismTest extends LinearOpMode {
 
     /* Declare OpMode members. */
     public DcMotor  extender = null;
-    public DcMotor wrist = null;
+    public DcMotor outtake = null;
+    public Servo claw = null;
 
     boolean extending = false;
 
@@ -59,9 +61,10 @@ public class MechanismTest extends LinearOpMode {
     public void runOpMode() {
         // Define and Initialize Motors
         extender  = hardwareMap.get(DcMotor.class, "extender");
-        wrist = hardwareMap.get(DcMotor.class, "wrist");
+        outtake = hardwareMap.get(DcMotor.class, "outtake");
 
-
+        claw = hardwareMap.get(Servo.class, "claw");
+        claw.setPosition(0);
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
@@ -69,7 +72,7 @@ public class MechanismTest extends LinearOpMode {
 
         // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
         extender.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        wrist.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        outtake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData(">", "Robot Ready.  Press START.");    //
@@ -87,9 +90,11 @@ public class MechanismTest extends LinearOpMode {
             if (gamepad1.right_trigger != 0) {
                 extender.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 extend = gamepad1.right_trigger;
+                extending = false;
             } else if (gamepad1.left_trigger != 0) {
                 extender.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 extend = -gamepad1.left_trigger;
+                extending = false;
             } else {
                 extend = 0;
             }
@@ -107,7 +112,7 @@ public class MechanismTest extends LinearOpMode {
                 extender.setPower(extend);
             }
 
-            wrist.setPower(pivot);
+            outtake.setPower(pivot);
             
             if (gamepad1.y) {
                 extender.setTargetPosition(1000);
@@ -115,12 +120,15 @@ public class MechanismTest extends LinearOpMode {
                 extender.setPower(1);
                 extending = true;
             }
-             if (gamepad1.x) {
+            if (gamepad1.x) {
                  extender.setTargetPosition(0);
                  extender.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                  extender.setPower(1);
                  extending = true;
-             }
+            }
+
+            if (gamepad1.left_bumper) claw.setPosition(0);
+            if(gamepad1.right_bumper) claw.setPosition(1);
         }
     }
 }
