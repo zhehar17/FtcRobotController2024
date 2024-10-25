@@ -59,7 +59,11 @@ public class DriveTest extends LinearOpMode {
     public DcMotor  leftBack = null;
     public DcMotor rightBack = null;
 
+    public DcMotor lower = null;
+    public DcMotor upper = null;
+    public Servo claw = null;
 
+    boolean extending = false;
 
     @Override
     public void runOpMode() {
@@ -82,6 +86,20 @@ public class DriveTest extends LinearOpMode {
         leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        // Define and Initialize Motors
+        lower = hardwareMap.get(DcMotor.class, "lower");
+        upper = hardwareMap.get(DcMotor.class, "upper");
+
+        claw = hardwareMap.get(Servo.class, "claw");
+        claw.setPosition(1);
+        // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
+        // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
+        // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
+        lower.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        upper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
+        lower.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        upper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData(">", "Robot Ready.  Press START.");    //
@@ -110,6 +128,51 @@ public class DriveTest extends LinearOpMode {
             leftBack.setPower(backLeftPower);
             rightFront.setPower(frontRightPower);
             rightBack.setPower(backRightPower);
+
+            //mechanism below
+            double extend;
+
+            if (gamepad1.right_trigger != 0) {
+                lower.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                extend = gamepad1.right_trigger;
+                extending = false;
+            } else if (gamepad1.left_trigger != 0) {
+                lower.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                extend = -gamepad1.left_trigger;
+                extending = false;
+            } else {
+                extend = 0;
+            }
+
+            if (gamepad1.a) {
+                upper.setTargetPosition(0);
+                upper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                upper.setPower(1);
+            } else if (gamepad1.b) {
+                upper.setTargetPosition(1000);
+                upper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                upper.setPower(1);
+            }
+
+            if (!extending) {
+                lower.setPower(extend);
+            }
+
+            if (gamepad1.y) {
+                lower.setTargetPosition(1000);
+                lower.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                lower.setPower(1);
+                extending = true;
+            }
+            if (gamepad1.x) {
+                lower.setTargetPosition(0);
+                lower.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                lower.setPower(1);
+                extending = true;
+            }
+
+            if (gamepad1.left_bumper) claw.setPosition(0);
+            if(gamepad1.right_bumper) claw.setPosition(1);
         }
     }
 }
