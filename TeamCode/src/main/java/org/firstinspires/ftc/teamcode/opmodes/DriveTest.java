@@ -61,7 +61,9 @@ public class DriveTest extends LinearOpMode {
 
     public DcMotor lower = null;
     public DcMotor upper = null;
+    public DcMotor winch = null;
     public Servo claw = null;
+    public Servo intake = null;
 
     boolean extending = false;
 
@@ -89,8 +91,10 @@ public class DriveTest extends LinearOpMode {
         // Define and Initialize Motors
         lower = hardwareMap.get(DcMotor.class, "lower");
         upper = hardwareMap.get(DcMotor.class, "upper");
+        winch = hardwareMap.get(DcMotor.class, "winch");
 
         claw = hardwareMap.get(Servo.class, "claw");
+        intake = hardwareMap.get(Servo.class, "intake");
         claw.setPosition(1);
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
@@ -169,6 +173,14 @@ public class DriveTest extends LinearOpMode {
                 lower.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 lower.setPower(1);
                 extending = true;
+            }
+
+            if(gamepad1.dpad_left) {
+                winch.setPower(0.2);
+            } else if(gamepad1.dpad_right){
+                winch.setPower(-0.2);
+            } else {
+                winch.setPower(0);
             }
 
             if (gamepad1.left_bumper) claw.setPosition(0);
