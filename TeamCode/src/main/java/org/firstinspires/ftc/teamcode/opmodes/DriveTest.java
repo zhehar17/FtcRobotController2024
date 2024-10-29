@@ -183,7 +183,7 @@ public class DriveTest extends LinearOpMode {
             } else {
                 winch.setPower(0);
             }
-
+            //claw
             if (gamepad1.left_bumper) claw.setPosition(0);
             if(gamepad1.right_bumper) claw.setPosition(1);
         }
