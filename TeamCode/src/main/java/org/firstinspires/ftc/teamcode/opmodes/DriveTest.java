@@ -175,6 +175,7 @@ public class DriveTest extends LinearOpMode {
                 extending = true;
             }
 
+            //winch for intake
             if(gamepad1.dpad_left) {
                 winch.setPower(0.2);
             } else if(gamepad1.dpad_right){
