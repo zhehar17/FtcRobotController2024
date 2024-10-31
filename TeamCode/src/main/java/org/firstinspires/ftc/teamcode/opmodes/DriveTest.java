@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -63,7 +64,7 @@ public class DriveTest extends LinearOpMode {
     public DcMotor upper = null;
     public DcMotor winch = null;
     public Servo claw = null;
-    public Servo intake = null;
+    public CRServo intake = null;
 
     boolean extending = false;
 
@@ -94,7 +95,7 @@ public class DriveTest extends LinearOpMode {
         winch = hardwareMap.get(DcMotor.class, "winch");
 
         claw = hardwareMap.get(Servo.class, "claw");
-        intake = hardwareMap.get(Servo.class, "intake");
+        intake = hardwareMap.get(CRServo.class, "intake");
         claw.setPosition(1);
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
@@ -135,17 +136,21 @@ public class DriveTest extends LinearOpMode {
 
             //mechanism below
             double extend;
+            double winchPower;
 
             if (gamepad1.right_trigger != 0) {
                 lower.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                extend = gamepad1.right_trigger;
+                extend = gamepad1.right_trigger*0.65;
+                winchPower = -gamepad1.right_trigger;
                 extending = false;
             } else if (gamepad1.left_trigger != 0) {
                 lower.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                extend = -gamepad1.left_trigger;
+                extend = -gamepad1.left_trigger*0.25;
+                winchPower = gamepad1.left_trigger;
                 extending = false;
             } else {
                 extend = 0;
+                winchPower = 0;
             }
 
             if (gamepad1.a) {
@@ -159,9 +164,10 @@ public class DriveTest extends LinearOpMode {
             }
 
             if (!extending) {
+                winch.setPower(winchPower);
                 lower.setPower(extend);
             }
-
+            /*
             if (gamepad1.y) {
                 lower.setTargetPosition(1000);
                 lower.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -174,12 +180,12 @@ public class DriveTest extends LinearOpMode {
                 lower.setPower(1);
                 extending = true;
             }
-
+            */
             //winch for intake
             if(gamepad1.dpad_left) {
-                winch.setPower(0.2);
+                winch.setPower(0.8);
             } else if(gamepad1.dpad_right){
-                winch.setPower(-0.2);
+                winch.setPower(-0.8);
             } else {
                 winch.setPower(0);
             }
