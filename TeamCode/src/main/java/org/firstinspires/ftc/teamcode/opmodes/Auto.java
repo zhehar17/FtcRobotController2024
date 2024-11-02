@@ -32,6 +32,72 @@ public class Auto extends LinearOpMode {
             upper.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             upper.setDirection(DcMotor.Direction.FORWARD);
         }
+
+        public class LiftUp implements Action {
+            // checks if the lift motor has been powered on
+            private boolean initialized = false;
+
+            // actions are formatted via telemetry packets as below
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                // powers on motor, if it is not on
+                if (!initialized) {
+                    upper.setPower(0.8);
+                    initialized = true;
+                }
+
+                // checks lift's current position
+                double pos = upper.getCurrentPosition();
+                packet.put("liftPos", pos);
+                if (pos < 100.0) {
+                    // true causes the action to rerun
+                    return true;
+                } else {
+                    // false stops action rerun
+                    upper.setPower(0);
+                    return false;
+                }
+                // overall, the action powers the lift until it surpasses
+                // 3000 encoder ticks, then powers it off
+            }
+        }
+
+        public Action liftUp() {
+            return new LiftUp();
+        }
+
+        public class LiftDown implements Action {
+            // checks if the lift motor has been powered on
+            private boolean initialized = false;
+
+            // actions are formatted via telemetry packets as below
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                // powers on motor, if it is not on
+                if (!initialized) {
+                    upper.setPower(-0.8);
+                    initialized = true;
+                }
+
+                // checks lift's current position
+                double pos = upper.getCurrentPosition();
+                packet.put("liftPos", pos);
+                if (pos > 0) {
+                    // true causes the action to rerun
+                    return true;
+                } else {
+                    // false stops action rerun
+                    upper.setPower(0);
+                    return false;
+                }
+                // overall, the action powers the lift until it surpasses
+                // 3000 encoder ticks, then powers it off
+            }
+        }
+
+        public Action liftDown() {
+            return new LiftDown();
+        }
     }
 
     public class Lower {
@@ -53,6 +119,28 @@ public class Auto extends LinearOpMode {
 
         public Claw(HardwareMap hardwareMap) {
             claw = hardwareMap.get(Servo.class, "claw");
+        }
+
+        public class CloseClaw implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                claw.setPosition(1);
+                return false;
+            }
+        }
+        public Action closeClaw() {
+            return new CloseClaw();
+        }
+
+        public class OpenClaw implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                claw.setPosition(0);
+                return false;
+            }
+        }
+        public Action openClaw() {
+            return new OpenClaw();
         }
     }
 
