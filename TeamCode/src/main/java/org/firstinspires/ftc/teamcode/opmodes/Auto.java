@@ -36,18 +36,12 @@ public class Auto extends LinearOpMode {
 
     public class Lower {
         private DcMotor lower;
+        private DcMotor winch;
 
         public Lower(HardwareMap hardwareMap) {
             lower = hardwareMap.get(DcMotor.class, "lower");
             lower.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             lower.setDirection(DcMotor.Direction.FORWARD);
-        }
-    }
-
-    public class Winch {
-        private DcMotor winch;
-
-        public Winch(HardwareMap hardwareMap) {
             winch = hardwareMap.get(DcMotor.class, "winch");
             winch.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             winch.setDirection(DcMotor.Direction.FORWARD);
@@ -69,7 +63,6 @@ public class Auto extends LinearOpMode {
             intake = hardwareMap.get(Servo.class, "intake");
         }
     }
-
 
     @Override
     public void runOpMode() {
