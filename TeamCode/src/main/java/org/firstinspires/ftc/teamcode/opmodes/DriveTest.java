@@ -67,6 +67,9 @@ public class DriveTest extends LinearOpMode {
     public CRServo intake = null;
 
     boolean extending = false;
+    boolean liftingUp = false;
+    boolean goingDown = false;
+    boolean scoringPiece = false;
 
     @Override
     public void runOpMode() {
@@ -156,24 +159,49 @@ public class DriveTest extends LinearOpMode {
             }
 
             if (gamepad1.a) {
+                upper.setTargetPosition(650);
+                upper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                upper.setPower(.6);
+                goingDown = true;
+                scoringPiece = true;
+            }
+            if (scoringPiece && Math.abs(upper.getCurrentPosition() - 650) < 25) {
+                scoringPiece = false;
+                claw.setPosition(0);
                 upper.setTargetPosition(0);
                 upper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                upper.setPower(1);
+                upper.setPower(.6);
+                sleep(50);
+                claw.setPosition(1);
             }
+
             if (gamepad1.b) {
-                upper.setTargetPosition(100);
+                upper.setTargetPosition(775);
                 upper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                upper.setPower(1);
+                upper.setPower(.7);
+                liftingUp = true;
+            }
+
+            if (goingDown && upper.getCurrentPosition() < 0) {
+                upper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                upper.setPower(0);
+                goingDown = false;
+            }
+
+            if (liftingUp && upper.getCurrentPosition() > 750) {
+                upper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                upper.setPower(0);
+                liftingUp = false;
             }
 
             if (gamepad1.dpad_up) {
                 upper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                upper.setPower(1);
+                upper.setPower(.6);
             }
 
             if (gamepad1.dpad_down) {
                 upper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                upper.setPower(-1);
+                upper.setPower(-.6);
             }
 
             if (gamepad1.start) {
