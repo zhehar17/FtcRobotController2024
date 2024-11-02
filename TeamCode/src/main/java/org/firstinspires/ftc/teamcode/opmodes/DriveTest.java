@@ -104,7 +104,9 @@ public class DriveTest extends LinearOpMode {
         upper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
         lower.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        upper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        upper.setTargetPosition(0);
+        upper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData(">", "Robot Ready.  Press START.");    //
@@ -157,12 +159,31 @@ public class DriveTest extends LinearOpMode {
                 upper.setTargetPosition(0);
                 upper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 upper.setPower(1);
-            } else if (gamepad1.b) {
-                upper.setTargetPosition(1000);
+            }
+            if (gamepad1.b) {
+                upper.setTargetPosition(100);
                 upper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 upper.setPower(1);
             }
 
+            if (gamepad1.dpad_up) {
+                upper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                upper.setPower(1);
+            }
+
+            if (gamepad1.dpad_down) {
+                upper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                upper.setPower(-1);
+            }
+
+            if (gamepad1.start) {
+                upper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                upper.setPower(0);
+            }
+
+            if (gamepad1.back) {
+                upper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            }
             if (!extending) {
                 winch.setPower(winchPower);
                 lower.setPower(extend);
@@ -192,6 +213,9 @@ public class DriveTest extends LinearOpMode {
             //claw
             if (gamepad1.left_bumper) claw.setPosition(0);
             if(gamepad1.right_bumper) claw.setPosition(1);
+
+            telemetry.addData("position", upper.getCurrentPosition());
+            telemetry.update();
         }
     }
 }
