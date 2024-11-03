@@ -75,6 +75,7 @@ public class DriveTest extends LinearOpMode {
     boolean liftingUp = false;
     boolean goingDown = false;
     boolean scoringPiece = false;
+    boolean slow = false;
 
     @Override
     public void runOpMode() {
@@ -127,37 +128,39 @@ public class DriveTest extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
-            double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
-            double rx = gamepad1.right_stick_x;
+            double y = -gamepad2.left_stick_y; // Remember, Y stick value is reversed
+            double x = gamepad2.left_stick_x * 1.1; // Counteract imperfect strafing
+            double rx = gamepad2.right_stick_x;
 
             // Denominator is the largest motor power (absolute value) or 1
             // This ensures all the powers maintain the same ratio,
             // but only if at least one is out of the range [-1, 1]
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+            if (gamepad2.y) slow = !slow;
+            if (slow) denominator *= 2;
             double frontLeftPower = (y + x + rx) / denominator;
             double backLeftPower = (y - x + rx) / denominator;
             double frontRightPower = (y - x - rx) / denominator;
             double backRightPower = (y + x - rx) / denominator;
-/*
+
             leftFront.setPower(frontLeftPower);
             leftBack.setPower(backLeftPower);
             rightFront.setPower(frontRightPower);
-            rightBack.setPower(backRightPower);*/
+            rightBack.setPower(backRightPower);
 
             //mechanism below
             double extend;
             double winchPower;
 
-            if (gamepad1.right_trigger != 0) {
+            if (gamepad2.right_trigger != 0) {
                 lower.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                extend = gamepad1.right_trigger*0.65;
-                winchPower = -gamepad1.right_trigger;
+                extend = gamepad2.right_trigger*0.65;
+                winchPower = -gamepad2.right_trigger;
                 extending = false;
-            } else if (gamepad1.left_trigger != 0) {
+            } else if (gamepad2.left_trigger != 0) {
                 lower.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                extend = -gamepad1.left_trigger*0.25;
-                winchPower = gamepad1.left_trigger;
+                extend = -gamepad2.left_trigger*0.25;
+                winchPower = gamepad2.left_trigger;
                 extending = false;
             } else {
                 extend = 0;
@@ -237,7 +240,7 @@ public class DriveTest extends LinearOpMode {
             }
             */
             //winch for intake
-            if (gamepad1.left_stick_y <= 0) {
+            if (!gamepad2.a && !gamepad2.b) {
                 if (gamepad1.dpad_left) {
                     winch.setPower(0.8);
                 } else if (gamepad1.dpad_right) {
@@ -250,13 +253,16 @@ public class DriveTest extends LinearOpMode {
             if (gamepad1.left_bumper) claw.setPosition(0);
             if(gamepad1.right_bumper) claw.setPosition(1);
 
-            if (gamepad1.right_stick_x > 0) intake.setPower(1);
-            else if (gamepad1.right_stick_x < 0) intake.setPower(-1);
+            if (gamepad2.left_bumper) intake.setPower(1);
+            else if (gamepad2.right_bumper) intake.setPower(-1);
             else intake.setPower(0);
 
-            if (-gamepad1.left_stick_y > 0) {
-                if (distance.getDistance(DistanceUnit.INCH) > 1.66) winch.setPower(-.2);
-                else if (distance.getDistance(DistanceUnit.INCH) < 1.56) winch.setPower(.2);
+            if (gamepad2.a) winch.setPower(-.2);
+            else winch.setPower(0);
+
+
+            if (gamepad2.b) {
+                if (distance.getDistance(DistanceUnit.INCH) < 3.45) winch.setPower(.4);
                 else winch.setPower(0);
             }
 
