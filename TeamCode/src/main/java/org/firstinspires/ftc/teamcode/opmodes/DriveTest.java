@@ -35,8 +35,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 /*
  * This OpMode executes a POV Game style Teleop for a direct drive robot
@@ -66,6 +69,8 @@ public class DriveTest extends LinearOpMode {
     public Servo claw = null;
     public CRServo intake = null;
 
+    public DistanceSensor distance = null;
+
     boolean extending = false;
     boolean liftingUp = false;
     boolean goingDown = false;
@@ -73,6 +78,7 @@ public class DriveTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        distance = hardwareMap.get(DistanceSensor.class, "distance");
 
         // Define and Initialize Motors
         leftFront  = hardwareMap.get(DcMotor.class, "frontLeft");
@@ -133,11 +139,11 @@ public class DriveTest extends LinearOpMode {
             double backLeftPower = (y - x + rx) / denominator;
             double frontRightPower = (y - x - rx) / denominator;
             double backRightPower = (y + x - rx) / denominator;
-
+/*
             leftFront.setPower(frontLeftPower);
             leftBack.setPower(backLeftPower);
             rightFront.setPower(frontRightPower);
-            rightBack.setPower(backRightPower);
+            rightBack.setPower(backRightPower);*/
 
             //mechanism below
             double extend;
@@ -231,18 +237,31 @@ public class DriveTest extends LinearOpMode {
             }
             */
             //winch for intake
-            if(gamepad1.dpad_left) {
-                winch.setPower(0.8);
-            } else if(gamepad1.dpad_right){
-                winch.setPower(-0.8);
-            } else {
-                winch.setPower(0);
+            if (gamepad1.left_stick_y <= 0) {
+                if (gamepad1.dpad_left) {
+                    winch.setPower(0.8);
+                } else if (gamepad1.dpad_right) {
+                    winch.setPower(-0.8);
+                } else {
+                    winch.setPower(0);
+                }
             }
             //claw
             if (gamepad1.left_bumper) claw.setPosition(0);
             if(gamepad1.right_bumper) claw.setPosition(1);
 
+            if (gamepad1.right_stick_x > 0) intake.setPower(1);
+            else if (gamepad1.right_stick_x < 0) intake.setPower(-1);
+            else intake.setPower(0);
+
+            if (-gamepad1.left_stick_y > 0) {
+                if (distance.getDistance(DistanceUnit.INCH) > 1.66) winch.setPower(-.2);
+                else if (distance.getDistance(DistanceUnit.INCH) < 1.56) winch.setPower(.2);
+                else winch.setPower(0);
+            }
+
             telemetry.addData("position", upper.getCurrentPosition());
+            telemetry.addData("distance", distance.getDistance(DistanceUnit.INCH));
             telemetry.update();
         }
     }
