@@ -8,6 +8,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 
@@ -49,7 +50,7 @@ public class Auto extends LinearOpMode {
                 // checks lift's current position
                 double pos = upper.getCurrentPosition();
                 packet.put("liftPos", pos);
-                if (pos < 100.0) {
+                if (pos < 750) {
                     // true causes the action to rerun
                     return true;
                 } else {
@@ -66,7 +67,40 @@ public class Auto extends LinearOpMode {
             return new LiftUp();
         }
 
-        public class LiftDown implements Action {
+        public class LiftDownToScore implements Action {
+            // checks if the lift motor has been powered on
+            private boolean initialized = false;
+
+            // actions are formatted via telemetry packets as below
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                // powers on motor, if it is not on
+                if (!initialized) {
+                    upper.setPower(-0.8);
+                    initialized = true;
+                }
+
+                // checks lift's current position
+                double pos = upper.getCurrentPosition();
+                packet.put("liftPos", pos);
+                if (pos > 675) {
+                    // true causes the action to rerun
+                    return true;
+                } else {
+                    // false stops action rerun
+                    upper.setPower(0);
+                    return false;
+                }
+                // overall, the action powers the lift until it surpasses
+                // 3000 encoder ticks, then powers it off
+            }
+        }
+
+        public Action liftDownToScore() {
+            return new LiftDownToScore();
+        }
+
+        public class LiftDownToPickup implements Action {
             // checks if the lift motor has been powered on
             private boolean initialized = false;
 
@@ -95,22 +129,8 @@ public class Auto extends LinearOpMode {
             }
         }
 
-        public Action liftDown() {
-            return new LiftDown();
-        }
-    }
-
-    public class Lower {
-        private DcMotor lower;
-        private DcMotor winch;
-
-        public Lower(HardwareMap hardwareMap) {
-            lower = hardwareMap.get(DcMotor.class, "lower");
-            lower.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            lower.setDirection(DcMotor.Direction.FORWARD);
-            winch = hardwareMap.get(DcMotor.class, "winch");
-            winch.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            winch.setDirection(DcMotor.Direction.FORWARD);
+        public Action liftDownToPickup() {
+            return new LiftDownToPickup();
         }
     }
 
@@ -144,16 +164,45 @@ public class Auto extends LinearOpMode {
         }
     }
 
-    public class Intake {
-        private Servo intake;
-
-        public Intake(HardwareMap hardwareMap) {
-            intake = hardwareMap.get(Servo.class, "intake");
-        }
-    }
-
     @Override
     public void runOpMode() {
+// instantiate your MecanumDrive at a particular pose.
+        Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(0));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
+        // make a Claw instance
+        Claw claw = new Claw(hardwareMap);
+        // make a Lift instance
+        Upper lift = new Upper(hardwareMap);
 
+        // actionBuilder builds from the drive steps passed to it
+        TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose)
+                .lineToX(30)
+                .waitSeconds(3);
+        TrajectoryActionBuilder tab2 = tab1.fresh()
+                .setTangent(Math.PI)
+                .splineToLinearHeading(new Pose2d(10,-50, Math.PI),3*Math.PI/2)
+                .setTangent(Math.PI)
+                .lineToX(2);
+        // actions that need to happen on init; for instance, a claw tightening.
+        //Actions.runBlocking(claw.closeClaw());
+
+        waitForStart();
+
+        if (isStopRequested()) return;
+
+        Action trajectoryActionOne;
+        Action trajectoryActionTwo;
+        trajectoryActionOne = tab1.build();
+        trajectoryActionTwo = tab2.build();
+        Actions.runBlocking(
+                new SequentialAction(
+                        //lift.liftUp(),
+                        trajectoryActionOne,
+                        //lift.liftDownToScore(),
+                        //claw.openClaw(),
+                        //lift.liftDownToPickup()
+                        trajectoryActionTwo
+                )
+        );
     }
 }
