@@ -183,6 +183,23 @@ public class Auto extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(10,-50, Math.PI),3*Math.PI/2)
                 .setTangent(Math.PI)
                 .lineToX(2);
+        TrajectoryActionBuilder tab3 = tab2.fresh()
+                .setTangent(Math.PI/2)
+                .splineToLinearHeading(new Pose2d(30,0,0),0);
+        TrajectoryActionBuilder tab4 = tab3.fresh()
+                .setTangent(Math.PI)
+                .splineToLinearHeading(new Pose2d(10,-50, Math.PI),3*Math.PI/2)
+                .setTangent(Math.PI)
+                .lineToX(50)
+                .strafeTo(new Vector2d(50, -55))
+                .lineToX(10)
+                .lineToX(50)
+                .strafeTo(new Vector2d(50, -60))
+                .lineToX(10)
+                .lineToX(50)
+                .strafeTo(new Vector2d(50, -65))
+                .lineToX(10);
+
         // actions that need to happen on init; for instance, a claw tightening.
         //Actions.runBlocking(claw.closeClaw());
 
@@ -192,16 +209,27 @@ public class Auto extends LinearOpMode {
 
         Action trajectoryActionOne;
         Action trajectoryActionTwo;
+        Action trajectoryActionThree;
+        Action trajectoryActionFour;
         trajectoryActionOne = tab1.build();
         trajectoryActionTwo = tab2.build();
+        trajectoryActionThree = tab3.build();
+        trajectoryActionFour = tab4.build();
+
         Actions.runBlocking(
                 new SequentialAction(
                         //lift.liftUp(),
                         trajectoryActionOne,
                         //lift.liftDownToScore(),
                         //claw.openClaw(),
-                        //lift.liftDownToPickup()
-                        trajectoryActionTwo
+                        //lift.liftDownToPickup(),
+                        trajectoryActionTwo,
+                        //claw.closeClaw(),
+                        trajectoryActionThree,
+                        //lift.liftDownToScore(),
+                        //claw.openClaw(),
+                        //lift.liftDownToPickup(),
+                        trajectoryActionFour
                 )
         );
     }
