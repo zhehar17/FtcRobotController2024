@@ -32,6 +32,8 @@ public class Auto extends LinearOpMode {
             upper = hardwareMap.get(DcMotor.class, "upper");
             upper.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             upper.setDirection(DcMotor.Direction.FORWARD);
+            upper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            upper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
 
         public class LiftUp implements Action {
@@ -50,7 +52,7 @@ public class Auto extends LinearOpMode {
                 // checks lift's current position
                 double pos = upper.getCurrentPosition();
                 packet.put("liftPos", pos);
-                if (pos < 750) {
+                if (pos < 725) {
                     // true causes the action to rerun
                     return true;
                 } else {
@@ -182,22 +184,27 @@ public class Auto extends LinearOpMode {
                 .setTangent(Math.PI)
                 .splineToLinearHeading(new Pose2d(10,-50, Math.PI),3*Math.PI/2)
                 .setTangent(Math.PI)
-                .lineToX(2);
+                .lineToX(2)
+                .waitSeconds(2);
         TrajectoryActionBuilder tab3 = tab2.fresh()
                 .setTangent(Math.PI/2)
-                .splineToLinearHeading(new Pose2d(30,0,0),0);
+                .splineToLinearHeading(new Pose2d(30,7, 0),0)
+                .waitSeconds(1);
         TrajectoryActionBuilder tab4 = tab3.fresh()
                 .setTangent(Math.PI)
                 .splineToLinearHeading(new Pose2d(10,-50, Math.PI),3*Math.PI/2)
                 .setTangent(Math.PI)
                 .lineToX(50)
                 .strafeTo(new Vector2d(50, -55))
+                .setTangent(Math.PI)
                 .lineToX(10)
                 .lineToX(50)
                 .strafeTo(new Vector2d(50, -60))
+                .setTangent(Math.PI)
                 .lineToX(10)
                 .lineToX(50)
                 .strafeTo(new Vector2d(50, -65))
+                .setTangent(Math.PI)
                 .lineToX(10);
 
         // actions that need to happen on init; for instance, a claw tightening.
@@ -214,22 +221,22 @@ public class Auto extends LinearOpMode {
         trajectoryActionOne = tab1.build();
         trajectoryActionTwo = tab2.build();
         trajectoryActionThree = tab3.build();
-        trajectoryActionFour = tab4.build();
+        //trajectoryActionFour = tab4.build();
 
         Actions.runBlocking(
                 new SequentialAction(
-                        //lift.liftUp(),
+                        lift.liftUp(),
                         trajectoryActionOne,
-                        //lift.liftDownToScore(),
-                        //claw.openClaw(),
-                        //lift.liftDownToPickup(),
+                        lift.liftDownToScore(),
+                        claw.openClaw(),
+                        lift.liftDownToPickup(),
                         trajectoryActionTwo,
-                        //claw.closeClaw(),
+                        claw.closeClaw(),
                         trajectoryActionThree,
-                        //lift.liftDownToScore(),
-                        //claw.openClaw(),
-                        //lift.liftDownToPickup(),
-                        trajectoryActionFour
+                        lift.liftDownToScore(),
+                        claw.openClaw(),
+                        lift.liftDownToPickup()
+                        //trajectoryActionFour
                 )
         );
     }
