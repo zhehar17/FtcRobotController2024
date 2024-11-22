@@ -33,7 +33,6 @@ public class Auto extends LinearOpMode {
         public Upper(HardwareMap hardwareMap) {
             upper = hardwareMap.get(DcMotor.class, "upper");
             upper.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            upper.setDirection(DcMotor.Direction.REVERSE);
             upper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             upper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
