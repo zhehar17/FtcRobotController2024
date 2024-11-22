@@ -104,6 +104,8 @@ public class DriveTest extends LinearOpMode {
         upper = hardwareMap.get(DcMotor.class, "upper");
         winch = hardwareMap.get(DcMotor.class, "winch");
 
+        upper.setDirection(DcMotor.Direction.REVERSE);
+
         claw = hardwareMap.get(Servo.class, "claw");
         intake = hardwareMap.get(CRServo.class, "intake");
         claw.setPosition(1);
