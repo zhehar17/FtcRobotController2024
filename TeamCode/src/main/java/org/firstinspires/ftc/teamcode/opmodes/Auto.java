@@ -32,6 +32,7 @@ public class Auto extends LinearOpMode {
 
         public Upper(HardwareMap hardwareMap) {
             upper = hardwareMap.get(DcMotor.class, "upper");
+            upper.setDirection(DcMotor.Direction.REVERSE);
             upper.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             upper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             upper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -184,62 +185,52 @@ public class Auto extends LinearOpMode {
                 .waitSeconds(.2);
         TrajectoryActionBuilder tab2 = tab1.fresh()
                 .setTangent(Math.PI)
-                .splineToLinearHeading(new Pose2d(10,-50, Math.PI),3*Math.PI/2)
+                .splineToLinearHeading(new Pose2d(30,-37, Math.PI),3*Math.PI/2)
                 .setTangent(Math.PI)
-                .lineToX(2)
+                .splineToLinearHeading(new Pose2d(55, -43, Math.PI),3*Math.PI/2)
                 .waitSeconds(.2);
         TrajectoryActionBuilder tab3 = tab2.fresh()
+                .setTangent(Math.PI)
+                .lineToX(10)
                 .setTangent(Math.PI/2)
-                .splineToLinearHeading(new Pose2d(30.5,10, 0),0)
+                .splineToLinearHeading(new Pose2d(2, -40, Math.PI), Math.PI)
                 .waitSeconds(.2);
         TrajectoryActionBuilder tab4 = tab3.fresh()
-                .setTangent(Math.PI)
-                .splineToLinearHeading(new Pose2d(10,-47, Math.PI),3*Math.PI/2)
-                .setTangent(Math.PI)
-                .lineToX(50)
-                .strafeTo(new Vector2d(50, -52))
-                .setTangent(Math.PI)
-                .lineToX(10)
-                .waitSeconds(.5)
-                .lineToX(50)
-                .strafeTo(new Vector2d(50, -57))
-                .setTangent(Math.PI)
-                .lineToX(10)
-                .waitSeconds(.5)
-                .lineToX(50)
-                .strafeTo(new Vector2d(50, -62))
-                .setTangent(Math.PI)
-                .lineToX(10);
+                .setTangent(0)
+                .splineToLinearHeading(new Pose2d(30, 1, 0), Math.PI/2)
+                .waitSeconds(.2);
         TrajectoryActionBuilder tab5 = tab4.fresh()
                 .setTangent(Math.PI)
-                .splineToLinearHeading(new Pose2d(10,-50, Math.PI),3*Math.PI/2)
+                .splineToLinearHeading(new Pose2d(30,-43, Math.PI),3*Math.PI/2)
                 .setTangent(Math.PI)
-                .lineToX(2)
-                .waitSeconds(1);
+                .splineToLinearHeading(new Pose2d(55, -49, Math.PI),3*Math.PI/2)
+                .waitSeconds(.2);
         TrajectoryActionBuilder tab6 = tab5.fresh()
+                .setTangent(Math.PI)
+                .lineToX(10)
                 .setTangent(Math.PI/2)
-                .splineToLinearHeading(new Pose2d(30,7, 0),0)
-                .waitSeconds(1);
+                .splineToLinearHeading(new Pose2d(2, -40, Math.PI), Math.PI)
+                .waitSeconds(.2);
         TrajectoryActionBuilder tab7 = tab6.fresh()
-                .setTangent(Math.PI)
-                .splineToLinearHeading(new Pose2d(10,-50, Math.PI),3*Math.PI/2)
-                .setTangent(Math.PI)
-                .lineToX(2)
-                .waitSeconds(1);
+                .setTangent(0)
+                .splineToLinearHeading(new Pose2d(30, 2, 0), Math.PI/2)
+                .waitSeconds(.2);
         TrajectoryActionBuilder tab8 = tab7.fresh()
-                .setTangent(Math.PI/2)
-                .splineToLinearHeading(new Pose2d(30,7, 0),0)
-                .waitSeconds(1);
+                .setTangent(Math.PI)
+                .splineToLinearHeading(new Pose2d(30,-50, Math.PI),3*Math.PI/2)
+                .setTangent(Math.PI)
+                .splineToLinearHeading(new Pose2d(50, -50, Math.PI),3*Math.PI/2)
+                .waitSeconds(.2);
         TrajectoryActionBuilder tab9 = tab8.fresh()
                 .setTangent(Math.PI)
-                .splineToLinearHeading(new Pose2d(10,-50, Math.PI),3*Math.PI/2)
-                .setTangent(Math.PI)
-                .lineToX(2)
-                .waitSeconds(1);
+                .lineToX(5)
+                .setTangent(Math.PI * 3/2)
+                .strafeTo(new Vector2d(2, -50))
+                .waitSeconds(.2);
         TrajectoryActionBuilder tab10 = tab9.fresh()
-                .setTangent(Math.PI/2)
-                .splineToLinearHeading(new Pose2d(30,7, 0),0)
-                .waitSeconds(1);
+                .setTangent(0)
+                .splineToLinearHeading(new Pose2d(30, 3, 0), Math.PI/2)
+                .waitSeconds(.2);
         TrajectoryActionBuilder tab11 = tab10.fresh()
                 .setTangent(Math.PI)
                 .splineToLinearHeading(new Pose2d(10,-50, Math.PI),3*Math.PI/2)
@@ -280,33 +271,28 @@ public class Auto extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                        lift.liftUp(),
+                        //lift.liftUp(),
                         trajectoryActionOne,
-                        lift.liftDownToScore(),
-                        claw.openClaw(),
-                        lift.liftDownToPickup(),
+                        //lift.liftDownToScore(),
+                        //claw.openClaw(),
+                        //lift.liftDownToPickup(),
                         trajectoryActionTwo,
-                        claw.closeClaw(),
-                        lift.liftUp(),
                         trajectoryActionThree,
-                        lift.liftDownToScore(),
-                        claw.openClaw(),
-                        lift.liftDownToPickup(),
+                        //claw.closeClaw(),
+                        //lift.liftUp()
                         trajectoryActionFour,
+                        lift.liftDownToScore(),
+                        /*claw.openClaw(),
+                        lift.liftDownToPickup(),*/
                         trajectoryActionFive,
+                        trajectoryActionSix/*
                         claw.closeClaw(),
                         lift.liftUp(),
-                        trajectoryActionSix,
-                        lift.liftDownToScore(),
-                        claw.openClaw(),
-                        lift.liftDownToPickup(),
                         trajectoryActionSeven,
-                        claw.closeClaw(),
-                        lift.liftUp(),
-                        trajectoryActionEight,
                         lift.liftDownToScore(),
                         claw.openClaw(),
                         lift.liftDownToPickup(),
+                        trajectoryActionEight,
                         trajectoryActionNine,
                         claw.closeClaw(),
                         lift.liftUp(),
@@ -314,7 +300,7 @@ public class Auto extends LinearOpMode {
                         lift.liftDownToScore(),
                         claw.openClaw(),
                         lift.liftDownToPickup(),
-                        trajectoryActionEleven
+                        trajectoryActionEleven*/
                 )
         );
     }

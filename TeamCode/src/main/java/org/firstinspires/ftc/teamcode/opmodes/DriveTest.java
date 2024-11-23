@@ -69,17 +69,15 @@ public class DriveTest extends LinearOpMode {
     public Servo claw = null;
     public CRServo intake = null;
 
-    public DistanceSensor distance = null;
-
     boolean extending = false;
     boolean liftingUp = false;
     boolean goingDown = false;
     boolean scoringPiece = false;
     boolean slow = false;
+    boolean clawClosed = true;
 
     @Override
     public void runOpMode() {
-        distance = hardwareMap.get(DistanceSensor.class, "distance");
 
         // Define and Initialize Motors
         leftFront  = hardwareMap.get(DcMotor.class, "frontLeft");
@@ -103,6 +101,8 @@ public class DriveTest extends LinearOpMode {
         lower = hardwareMap.get(DcMotor.class, "lower");
         upper = hardwareMap.get(DcMotor.class, "upper");
         winch = hardwareMap.get(DcMotor.class, "winch");
+
+        upper.setDirection(DcMotor.Direction.REVERSE);
 
         claw = hardwareMap.get(Servo.class, "claw");
         intake = hardwareMap.get(CRServo.class, "intake");
@@ -167,7 +167,7 @@ public class DriveTest extends LinearOpMode {
                 winchPower = 0;
             }
 
-            if (gamepad1.a) {
+            if (gamepad2.a) {
                 upper.setTargetPosition(650);
                 upper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 upper.setPower(.6);
@@ -184,7 +184,7 @@ public class DriveTest extends LinearOpMode {
                 claw.setPosition(1);
             }
 
-            if (gamepad1.b) {
+            if (gamepad2.b) {
                 upper.setTargetPosition(775);
                 upper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 upper.setPower(.7);
@@ -205,12 +205,12 @@ public class DriveTest extends LinearOpMode {
 
             if (gamepad1.dpad_up) {
                 upper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                upper.setPower(.6);
+                upper.setPower(.7);
             }
 
             if (gamepad1.dpad_down) {
                 upper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                upper.setPower(-.6);
+                upper.setPower(-0.7);
             }
 
             if (gamepad1.start) {
@@ -250,24 +250,25 @@ public class DriveTest extends LinearOpMode {
                 }
             }
             //claw
-            if (gamepad1.left_bumper) claw.setPosition(0);
-            if(gamepad1.right_bumper) claw.setPosition(1);
+            if (gamepad2.x && clawClosed) {
+                claw.setPosition(0);
+                clawClosed = false;
+            }
+            if(gamepad2.x && !clawClosed) {
+                claw.setPosition(1);
+                clawClosed = true;
+            }
 
             if (gamepad2.left_bumper) intake.setPower(1);
             else if (gamepad2.right_bumper) intake.setPower(-1);
             else intake.setPower(0);
 
-            if (gamepad2.a) winch.setPower(-.2);
+            if (gamepad2.dpad_up) winch.setPower(-.2);
+            else if (gamepad2.dpad_down) winch.setPower(.4);
             else winch.setPower(0);
 
 
-            if (gamepad2.b) {
-                if (distance.getDistance(DistanceUnit.INCH) < 3.45) winch.setPower(.4);
-                else winch.setPower(0);
-            }
-
             telemetry.addData("position", upper.getCurrentPosition());
-            telemetry.addData("distance", distance.getDistance(DistanceUnit.INCH));
             telemetry.update();
         }
     }
