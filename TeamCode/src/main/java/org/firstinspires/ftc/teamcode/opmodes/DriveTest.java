@@ -75,6 +75,7 @@ public class DriveTest extends LinearOpMode {
     boolean scoringPiece = false;
     boolean slow = false;
     boolean clawClosed = true;
+    boolean lowerCapped = false;
 
     @Override
     public void runOpMode() {
@@ -111,9 +112,9 @@ public class DriveTest extends LinearOpMode {
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
         lower.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        upper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        winch.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
-        lower.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        winch.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         upper.setTargetPosition(0);
         upper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
@@ -136,8 +137,11 @@ public class DriveTest extends LinearOpMode {
             // This ensures all the powers maintain the same ratio,
             // but only if at least one is out of the range [-1, 1]
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            if (gamepad2.y) slow = !slow;
-            if (slow) denominator *= 2;
+            if (gamepad2.y) {
+                slow = !slow;
+                sleep(125);
+            }
+            if (slow) denominator *= 4;
             double frontLeftPower = (y + x + rx) / denominator;
             double backLeftPower = (y - x + rx) / denominator;
             double frontRightPower = (y - x - rx) / denominator;
@@ -152,9 +156,13 @@ public class DriveTest extends LinearOpMode {
             double extend;
             double winchPower;
 
-            if (gamepad2.right_trigger != 0) {
+            //button to cap lower movement
+            if (winch.getCurrentPosition() < -18000) lowerCapped = true;
+            else lowerCapped = false;
+
+            if (gamepad2.right_trigger != 0 && !lowerCapped) {
                 lower.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                extend = gamepad2.right_trigger*0.65;
+                extend = gamepad2.right_trigger*0.55;
                 winchPower = -gamepad2.right_trigger;
                 extending = false;
             } else if (gamepad2.left_trigger != 0) {
@@ -168,24 +176,24 @@ public class DriveTest extends LinearOpMode {
             }
 
             if (gamepad2.a) {
-                upper.setTargetPosition(650);
+                upper.setTargetPosition(450);
                 upper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 upper.setPower(.6);
                 goingDown = true;
                 scoringPiece = true;
             }
-            if (scoringPiece && Math.abs(upper.getCurrentPosition() - 650) < 25) {
+            if (scoringPiece && Math.abs(upper.getCurrentPosition() - 450) < 40) {
                 scoringPiece = false;
                 claw.setPosition(0);
                 upper.setTargetPosition(0);
                 upper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 upper.setPower(.6);
                 sleep(50);
-                claw.setPosition(1);
+                //claw.setPosition(1);
             }
 
             if (gamepad2.b) {
-                upper.setTargetPosition(775);
+                upper.setTargetPosition(600);
                 upper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 upper.setPower(.7);
                 liftingUp = true;
@@ -197,9 +205,9 @@ public class DriveTest extends LinearOpMode {
                 goingDown = false;
             }
 
-            if (liftingUp && upper.getCurrentPosition() > 750) {
+            if (liftingUp && upper.getCurrentPosition() > 575) {
                 upper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                upper.setPower(0);
+                upper.setPower(.2);
                 liftingUp = false;
             }
 
@@ -252,10 +260,12 @@ public class DriveTest extends LinearOpMode {
             //claw
             if (gamepad2.x && clawClosed) {
                 claw.setPosition(0);
+                sleep(125);
                 clawClosed = false;
             }
             if(gamepad2.x && !clawClosed) {
                 claw.setPosition(1);
+                sleep(125);
                 clawClosed = true;
             }
 
@@ -263,12 +273,13 @@ public class DriveTest extends LinearOpMode {
             else if (gamepad2.right_bumper) intake.setPower(-1);
             else intake.setPower(0);
 
-            if (gamepad2.dpad_up) winch.setPower(-.2);
-            else if (gamepad2.dpad_down) winch.setPower(.4);
+            if (gamepad2.dpad_up) winch.setPower(.8);
+            else if (gamepad2.dpad_down) winch.setPower(-.4);
             else winch.setPower(0);
 
 
-            telemetry.addData("position", upper.getCurrentPosition());
+            telemetry.addData("upperPosition", upper.getCurrentPosition());
+            telemetry.addData("lowerPosition", winch.getCurrentPosition());
             telemetry.update();
         }
     }
