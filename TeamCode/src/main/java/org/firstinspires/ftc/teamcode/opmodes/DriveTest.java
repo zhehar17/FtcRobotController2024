@@ -111,7 +111,7 @@ public class DriveTest extends LinearOpMode {
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-        lower.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        upper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         winch.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
         winch.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -157,8 +157,10 @@ public class DriveTest extends LinearOpMode {
             double winchPower;
 
             //button to cap lower movement
-            if (winch.getCurrentPosition() < -18000) lowerCapped = true;
+            if (winch.getCurrentPosition() < -17000) lowerCapped = true;
             else lowerCapped = false;
+
+            if (gamepad1.a) lowerCapped = false;
 
             if (gamepad2.right_trigger != 0 && !lowerCapped) {
                 lower.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -195,7 +197,7 @@ public class DriveTest extends LinearOpMode {
             if (gamepad2.b) {
                 upper.setTargetPosition(600);
                 upper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                upper.setPower(.7);
+                upper.setPower(1);
                 liftingUp = true;
             }
 
@@ -207,7 +209,7 @@ public class DriveTest extends LinearOpMode {
 
             if (liftingUp && upper.getCurrentPosition() > 575) {
                 upper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                upper.setPower(.2);
+                upper.setPower(.45);
                 liftingUp = false;
             }
 
@@ -259,7 +261,7 @@ public class DriveTest extends LinearOpMode {
             }
             //claw
             if (gamepad2.x && clawClosed) {
-                claw.setPosition(0);
+                claw.setPosition(.2);
                 sleep(125);
                 clawClosed = false;
             }
