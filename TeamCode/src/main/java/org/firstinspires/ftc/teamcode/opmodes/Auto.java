@@ -189,7 +189,7 @@ public class Auto extends LinearOpMode {
                 .setTangent(Math.PI)
                 .splineToLinearHeading(new Pose2d(30,-37, Math.PI),3*Math.PI/2)
                 .setTangent(Math.PI)
-                .splineToLinearHeading(new Pose2d(55, -46, Math.PI),3*Math.PI/2)
+                .splineToLinearHeading(new Pose2d(52, -46, Math.PI),3*Math.PI/2)
                 .waitSeconds(.1);
         TrajectoryActionBuilder tab3 = tab2.fresh()
                 .setTangent(Math.PI)
@@ -270,27 +270,27 @@ public class Auto extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                        lift.liftUp(),
+                        //lift.liftUp(),
                         trajectoryActionOne,
-                        lift.liftDownToScore(),
-                        claw.openClaw(),
-                        lift.liftDownToPickup(),
+                        //lift.liftDownToScore(),
+                        //claw.openClaw(),
+                        //lift.liftDownToPickup(),
                         trajectoryActionTwo,
                         trajectoryActionThree,
-                        claw.closeClaw(),
-                        lift.liftUp(),
+                        //claw.closeClaw(),
+                        //lift.liftUp(),
                         trajectoryActionFour,
-                        lift.liftDownToScore(),
-                        claw.openClaw(),
-                        lift.liftDownToPickup(),
+                        //lift.liftDownToScore(),
+                        //claw.openClaw(),
+                        //lift.liftDownToPickup(),
                         trajectoryActionFive,
-                        claw.closeClaw(),
-                        lift.liftUp(),
+                        //claw.closeClaw(),
+                        //lift.liftUp(),
                         trajectoryActionSix,
-                        lift.liftDownToScore(),
-                        claw.openClaw(),
-                        lift.liftDownToPickup()
-                        //trajectoryActionEleven
+                        //lift.liftDownToScore(),
+                        //claw.openClaw(),
+                        //lift.liftDownToPickup()
+                        trajectoryActionEleven
                        /*
                         trajectoryActionSeven,
                         lift.liftDownToScore(),
