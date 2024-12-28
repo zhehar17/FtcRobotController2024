@@ -36,4 +36,17 @@ public class PositionSubsystem {
     public Pose3D getPose(){
         return result.getBotpose();
     }
+
+    public double getX(){
+        return result.getBotpose().getPosition().x * 39.3701 + 72;
+    }
+
+    public double getY(){
+        return result.getBotpose().getPosition().y * 39.3701 + 72;
+    }
+
+    public double getYaw(){
+        return result.getBotpose().getOrientation().getYaw() + 90;
+    }
+
 }

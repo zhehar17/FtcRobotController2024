@@ -127,20 +127,12 @@ public class ExampleAuto extends OpMode {
                         new BezierCurve(
                                 new Point(21.981, 13.234, Point.CARTESIAN),
                                 new Point(32.299, 25.794, Point.CARTESIAN),
-                                new Point(13.958, 28.935, Point.CARTESIAN)
-                        )
-                )
-                .setLinearHeadingInterpolation(Math.toRadians(-160), Math.toRadians(-180))
-                .addPath(
-                        // Line 5
-                        new BezierLine(
-                                new Point(13.958, 28.935, Point.CARTESIAN),
-                                new Point(11.958, 28.935, Point.CARTESIAN)
+                                new Point(14.958, 28.935, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(
-                        Math.toRadians(-180),
-                        Math.toRadians(-180)
+                        Math.toRadians(-160),
+                         Math.toRadians(-180)
                 )
                 .build();
         path3 = follower.pathBuilder()
@@ -189,6 +181,7 @@ public class ExampleAuto extends OpMode {
                 }
                 break;
             case 3:
+                if(pos.validResult())
                 if(follower.getPose().getX() < (13)) {
                     claw.closeClaw();
                     setPathState(4);
