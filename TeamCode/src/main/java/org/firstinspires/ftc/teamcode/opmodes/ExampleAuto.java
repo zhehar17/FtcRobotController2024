@@ -197,7 +197,7 @@ public class ExampleAuto extends OpMode {
             case 4:
                 if(claw.isClosed()) {
                     double pause = pathTimer.getElapsedTimeSeconds();
-                    while(pathTimer.getElapsedTimeSeconds() - pause > 0.75);
+                    while(pathTimer.getElapsedTimeSeconds() - pause > 0.75); //tries to wait for 0.75seconds
                     follower.followPath(path3, true);
                     upper.goUp();
                     setPathState(5);
