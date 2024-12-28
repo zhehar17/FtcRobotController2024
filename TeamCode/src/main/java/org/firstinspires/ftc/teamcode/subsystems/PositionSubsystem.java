@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -7,15 +8,17 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 public class PositionSubsystem {
     private Limelight3A limelight;
     private LLResult result;
+    private DistanceSensor distance;
 
     public PositionSubsystem(HardwareMap hardwareMap) {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
-
+        distance = hardwareMap.get(DistanceSensor.class, "lowerDistance");
         limelight.pipelineSwitch(0);
 
         /*
@@ -46,7 +49,11 @@ public class PositionSubsystem {
     }
 
     public double getYaw(){
-        return result.getBotpose().getOrientation().getYaw() + 90;
+        return result.getBotpose().getOrientation().getYaw() - 90;
+    }
+
+    public double getDistance() {
+        return distance.getDistance(DistanceUnit.INCH);
     }
 
 }
