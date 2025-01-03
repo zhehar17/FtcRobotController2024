@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.PositionSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.UpperSubsystem;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -81,27 +82,40 @@ public class ExampleAuto extends OpMode {
     private PathChain path1, path2, path3, path4, path5, path6, path7, path8, path9, path10, path11;
     //private PathChain grabPickup1, grabPickup2, grabPickup3, scorePickup1, scorePickup2, scorePickup3;
 
+    private double[][] poses = new double[5][3];
+    private int curI = 0;
+    public double lastX = 0;
+    public int median = -1;
     private boolean timerStarted = false;
     private double timer;
     private boolean scored = false;
     /** Build the paths for the auto (adds, for example, constant/linear headings while doing paths)
      * It is necessary to do this so that all the paths are built before the auto starts. **/
+    //Pose variables
+    public static final double localX = 20; //localizing x //14.958
+    public static final double localY = 32; //28.935
+    public static final double pickup2x = 12;//12.875;//11.458; //Up against wall to pickup
+    public static final double pickupy = 28.935;
+    public static final double scorex = 38.131;
+    public static final double startx = 10.000; //starting x
+    public static final double starty = 72.000;
+    public static final double increase = 1.5; //How far apart each spec is placed
     public void buildPaths() {
-        path1 = follower.pathBuilder()
+        path1 = follower.pathBuilder() //Start to score
                 .addPath(
                         // Line 1
                         new BezierLine(
-                                new Point(10.000, 72.000, Point.CARTESIAN),
-                                new Point(38.131, 72.000, Point.CARTESIAN)
+                                new Point(startx, starty, Point.CARTESIAN),
+                                new Point(scorex, starty, Point.CARTESIAN)
                         )
                 )
                 .setTangentHeadingInterpolation()
                 .build();
-        path2 = follower.pathBuilder()
+        path2 = follower.pathBuilder() //score to push 1 into pickup
                 .addPath(
                         // Line 1
                         new BezierCurve(
-                                new Point(38.131, 72.000, Point.CARTESIAN),
+                                new Point(scorex, starty, Point.CARTESIAN),
                                 new Point(21.084, 49.570, Point.CARTESIAN),
                                 new Point(29.832, 34.093, Point.CARTESIAN),
                                 new Point(44.411, 35.888, Point.CARTESIAN)
@@ -131,7 +145,7 @@ public class ExampleAuto extends OpMode {
                         new BezierCurve(
                                 new Point(21.981, 13.234, Point.CARTESIAN),
                                 new Point(32.299, 25.794, Point.CARTESIAN),
-                                new Point(14.958, 28.935, Point.CARTESIAN)
+                                new Point(localX, localY, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(
@@ -139,12 +153,12 @@ public class ExampleAuto extends OpMode {
                          Math.toRadians(-180)
                 )
                 .build();
-        path3 = follower.pathBuilder()
+        path3 = follower.pathBuilder() //move forward pickup
                 .addPath(
                         // Line 1
                         new BezierLine(
-                                new Point(14.958, 28.935, Point.CARTESIAN),
-                                new Point(11.458, 28.935, Point.CARTESIAN)
+                                new Point(localX, 28.935, Point.CARTESIAN),
+                                new Point(pickup2x, 28.935, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(
@@ -152,14 +166,14 @@ public class ExampleAuto extends OpMode {
                         Math.toRadians(-180)
                 )
                 .build();
-        path4 = follower.pathBuilder()
+        path4 = follower.pathBuilder() //pickup to score
                 .addPath(
                         // Line 1
                         new BezierCurve(
-                                new Point(11.458, 28.935, Point.CARTESIAN),
+                                new Point(pickup2x, 28.935, Point.CARTESIAN),
                                 new Point(35.888, 38.579, Point.CARTESIAN),
                                 new Point(14.579, 68.411, Point.CARTESIAN),
-                                new Point(38.131, 73.500, Point.CARTESIAN)
+                                new Point(scorex, starty+increase, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(
@@ -167,11 +181,11 @@ public class ExampleAuto extends OpMode {
                         Math.toRadians(0)
                 )
                 .build();
-        path5 = follower.pathBuilder()
+        path5 = follower.pathBuilder() //score to push 2 into pickup
                 .addPath(
                         // Line 1
                         new BezierCurve(
-                                new Point(38.131, 73.500, Point.CARTESIAN),
+                                new Point(scorex, starty+increase, Point.CARTESIAN),
                                 new Point(21.084, 49.570, Point.CARTESIAN),
                                 new Point(29.832, 34.093, Point.CARTESIAN),
                                 new Point(44.411, 35.888, Point.CARTESIAN)
@@ -183,24 +197,24 @@ public class ExampleAuto extends OpMode {
                         new BezierCurve(
                                 new Point(44.411, 35.888, Point.CARTESIAN),
                                 new Point(56.075, 35.664, Point.CARTESIAN),
-                                new Point(58.318, 14.579, Point.CARTESIAN)
+                                new Point(58.318, 17.579, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(-180))
                 .addPath(
                         // Line 3
                         new BezierLine(
-                                new Point(58.318, 14.579, Point.CARTESIAN),
-                                new Point(18.234, 11.888, Point.CARTESIAN)
+                                new Point(58.318, 17.579, Point.CARTESIAN),
+                                new Point(18.234, 12.888, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(-160))
                 .addPath(
                         // Line 4
                         new BezierCurve(
-                                new Point(18.234, 11.888, Point.CARTESIAN),
+                                new Point(18.234, 12.888, Point.CARTESIAN),
                                 new Point(32.299, 25.794, Point.CARTESIAN),
-                                new Point(14.958, 28.935, Point.CARTESIAN)
+                                new Point(localX, localY, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(
@@ -208,23 +222,23 @@ public class ExampleAuto extends OpMode {
                         Math.toRadians(-180)
                 )
                 .build();
-        path6 = follower.pathBuilder()
+        path6 = follower.pathBuilder() //pickup to score
                 .addPath(
                         // Line 1
                         new BezierCurve(
-                                new Point(11.438, 28.935, Point.CARTESIAN),
+                                new Point(pickup2x, localY, Point.CARTESIAN),
                                 new Point(33.196, 29.832, Point.CARTESIAN),
                                 new Point(14.131, 77.159, Point.CARTESIAN),
-                                new Point(38.131, 75.000, Point.CARTESIAN)
+                                new Point(scorex, starty+(2*increase), Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(0))
                 .build();
-        path7 = follower.pathBuilder()
+        path7 = follower.pathBuilder() //score to push 3 to pickup
                 .addPath(
                         // Line 1
                         new BezierCurve(
-                                new Point(38.131, 75.000, Point.CARTESIAN),
+                                new Point(scorex, starty+(2*increase), Point.CARTESIAN),
                                 new Point(21.084, 49.570, Point.CARTESIAN),
                                 new Point(29.159, 29.383, Point.CARTESIAN),
                                 new Point(66.841, 31.402, Point.CARTESIAN),
@@ -236,16 +250,16 @@ public class ExampleAuto extends OpMode {
                         // Line 2
                         new BezierLine(
                                 new Point(58.318, 9.196, Point.CARTESIAN),
-                                new Point(19.000, 9.196, Point.CARTESIAN)
+                                new Point(23.103, 10.766, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(-180))
                 .addPath(
                         // Line 3
                         new BezierCurve(
-                                new Point(19.000, 9.196, Point.CARTESIAN),
+                                new Point(23.103, 10.766, Point.CARTESIAN),
                                 new Point(32.299, 25.794, Point.CARTESIAN),
-                                new Point(14.958, 28.935, Point.CARTESIAN)
+                                new Point(localX, localY, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(
@@ -253,47 +267,47 @@ public class ExampleAuto extends OpMode {
                         Math.toRadians(-180)
                 )
                 .build();
-        path8 = follower.pathBuilder()
+        path8 = follower.pathBuilder() //pickup to score
                 .addPath(
                         // Line 1
                         new BezierCurve(
-                                new Point(11.438, 28.935, Point.CARTESIAN),
+                                new Point(pickup2x, localY, Point.CARTESIAN),
                                 new Point(33.196, 29.832, Point.CARTESIAN),
                                 new Point(14.131, 77.159, Point.CARTESIAN),
-                                new Point(38.131, 76.500, Point.CARTESIAN)
+                                new Point(scorex, starty+(3*increase), Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(0))
                 .build();
-        path9 = follower.pathBuilder()
+        path9 = follower.pathBuilder() //score to pickup
                 .addPath(
                         // Line 1
                         new BezierCurve(
-                                new Point(38.131, 76.500, Point.CARTESIAN),
+                                new Point(scorex, starty+(3*increase), Point.CARTESIAN),
                                 new Point(6.953, 79.178, Point.CARTESIAN),
                                 new Point(32.299, 29.832, Point.CARTESIAN),
-                                new Point(11.438, 28.935, Point.CARTESIAN)
+                                new Point(pickup2x, localY, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(0))
                 .build();
-        path10 = follower.pathBuilder()
+        path10 = follower.pathBuilder() //pickup to score
                 .addPath(
                         // Line 1
                         new BezierCurve(
-                                new Point(11.438, 28.935, Point.CARTESIAN),
+                                new Point(pickup2x, localY, Point.CARTESIAN),
                                 new Point(33.196, 29.832, Point.CARTESIAN),
                                 new Point(14.131, 77.159, Point.CARTESIAN),
-                                new Point(38.131, 78.000, Point.CARTESIAN)
+                                new Point(scorex, starty+(4*increase), Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(0))
                 .build();
-        path11 = follower.pathBuilder()
+        path11 = follower.pathBuilder() //park
                 .addPath(
                         // Line 1
                         new BezierLine(
-                                new Point(38.131, 84.983, Point.CARTESIAN),
+                                new Point(scorex, starty+(4*increase), Point.CARTESIAN),
                                 new Point(13.234, 10.318, Point.CARTESIAN)
                         )
                 )
@@ -309,45 +323,61 @@ public class ExampleAuto extends OpMode {
     /** This switch is called continuously and runs the pathing, at certain points, it triggers the action state.
      * Everytime the switch changes case, it will reset the timer. (This is because of the setPathState() method)
      * The followPath() function sets the follower to run the specific path, but does NOT wait for it to finish before moving on. */
+    public static final int[] caseOrder = { 0,12,1,
+                                            2,3,4,5,12,1,
+                                            6,3,4,7,12,1, //6 b
+                                            8,3,4,9,12,1,
+                                            10,1};
+    public int curCase = 0;
     public void autonomousPathUpdate() {
         switch (pathState) {
-            case 0:
+            case 0: //start position to score
                 follower.followPath(path1, true);
                 upper.goUp();
-                setPathState(1);
+                setPathState(caseOrder[curCase++]);
                 break;
-            case 1:
-                if(upper.getHeight() > 600){
-                    upper.stayUp();
-                    setPathState(2);
-                }
-                break;
-            case 2:
-                if(follower.getPose().getX() > (38.131 - 1)) {
-                    if(upper.getHeight() > RobotConstants.barHeight) {
+            case 1: //Score Case
+                if(follower.getPose().getX() > (38.131 - 1) && !follower.isBusy()) {
+                    if (upper.getHeight() > RobotConstants.barHeight) {
                         upper.scoreDown();
-                    }
-                    else {
+                    } else {
                         claw.openClaw();
-                        follower.followPath(path2, true);
+                        setPathState(caseOrder[curCase++]);
                     }
-                    if(upper.getHeight() < 15) scored = true;
-
                 }
-                if (scored) {
+                break;
+            case 2: //push to OZ
+                follower.followPath(path2, true);
+                if(upper.getHeight() < 15) {
                     upper.off();
-                    setPathState(3);
+                    setPathState(caseOrder[curCase++]);
                 }
-                break;
-            case 3:
+            case 3: //Relocalize
                 scored = false;
-                if(follower.getPose().getX() < (16)) {
+                if(follower.getPose().getX() < (localX + 0.252) && !follower.isBusy() && pos.validResult() && pos.getX() != lastX && poses[4][0] == 0){
+                    poses[curI] = new double[]{pos.getX(), pos.getY(), Math.toRadians(pos.getYaw())};
+                    lastX = poses[curI][0];
+                    curI++;
+                }
+                if(poses[4][0] != 0 && median == -1){
+                    double[] arr = {poses[0][0], poses[1][0], poses[2][0], poses[3][0], poses[4][0]};
+                    Arrays.sort(arr);
+                    for(int i = 0; i < 5; i++){
+                        if(poses[i][0] == arr[2]) median = i;
+                    }
+                }
+                if(median != -1){
+                    follower.setPose(new Pose(poses[median][0], poses[median][1], poses[median][2]));
                     follower.followPath(path3, true);
-                    setPathState(4);
+                    median = -1;
+                    poses = new double[5][3];
+                    lastX = 0;
+                    curI = 0;
+                    setPathState(caseOrder[curCase++]);
                 }
                 break;
-            case 4:
-                if (pos.getDistance() < 1.25) {
+            case 4: //Pickup off wall
+                if (follower.getPose().getX() < pickup2x+0.25) {
                     claw.closeClaw();
                     if(!timerStarted){
                         timerStarted = true;
@@ -356,169 +386,71 @@ public class ExampleAuto extends OpMode {
                 }
                 if(claw.isClosed() && (pathTimer.getElapsedTimeSeconds() - timer > 0.35)) {
                     upper.goUp();
-                    follower.followPath(path4, true);
-                    setPathState(5);
+                    setPathState(caseOrder[curCase++]);
                 }
                 break;
-            case 5:
+            case 5://p2s
+                if(follower.isBusy()) follower.followPath(path4, true);
+                setPathState(caseOrder[curCase++]);
+                break;
+            case 6: //push to OZ
+                follower.followPath(path5, true);
+                if(upper.getHeight() < 15) {
+                    upper.off();
+                    setPathState(caseOrder[curCase++]);
+                }
+                break;
+
+            case 7://p2s
+                follower.followPath(path6, true);
+                setPathState(caseOrder[curCase++]);
+                break;
+            case 8: //push to OZ
+                follower.followPath(path7, true);
+                if(upper.getHeight() < 15) {
+                    upper.off();
+                    setPathState(caseOrder[curCase++]);
+                }
+                break;
+            case 9://p2s
+                follower.followPath(path8, true);
+                setPathState(caseOrder[curCase++]);
+                break;
+            case 10: //score to pickup
+                follower.followPath(path9, true);
+                if(upper.getHeight() < 15) {
+                    upper.off();
+                    setPathState(caseOrder[curCase++]);
+                }
+                break;
+            case 11: //p2s
+                follower.followPath(path10, true);
+                setPathState(caseOrder[curCase++]);
+                break;
+            case 12: //stay up
                 if(upper.getHeight() > 600){
                     upper.stayUp();
-                    setPathState(6);
+                    setPathState(caseOrder[curCase++]);
                 }
                 break;
-            case 6:
-                if(follower.getPose().getX() > (38.131 - 1)) {
-                    if(upper.getHeight() > RobotConstants.barHeight) {
-                        upper.scoreDown();
-                    }
-                    else {
-                        claw.openClaw();
-                        follower.followPath(path5, true);
-                    }
-
-                    if(upper.getHeight() < 15) scored = true;
-
-                }
-                if (scored) {
-                    upper.off();
-                    setPathState(7);
-                }
-                break;
-            case 7:
-                scored = false;
-                if(follower.getPose().getX() < (16)) {
-                    follower.followPath(path3, true);
-                    timerStarted = false;
-                    setPathState(8);
-                }
-                break;
-            case 8:
-                if (pos.getDistance() < 1.25) {
-                    claw.closeClaw();
-                    if(!timerStarted){
-                        timerStarted = true;
-                        timer = pathTimer.getElapsedTimeSeconds();
-                    }
-                }
-                if(claw.isClosed() && (pathTimer.getElapsedTimeSeconds() - timer > 0.35)) {
-                    upper.goUp();
-                    follower.followPath(path6, true);
-                    setPathState(9);
-                }
-                break;
-            case 9:
-                if(upper.getHeight() > 600){
-                    upper.stayUp();
-                    setPathState(10);
-                }
-                break;
-            case 10:
-                if(follower.getPose().getX() > (38.131 - 1)) {
-                    if(upper.getHeight() > RobotConstants.barHeight) {
-                        upper.scoreDown();
-                    }
-                    else {
-                        claw.openClaw();
-                        follower.followPath(path7, true);
-                    }
-                    if(upper.getHeight() < 15) scored = true;
-
-                }
-                if (scored) {
-                    upper.off();
-                    setPathState(11);
-                }
-                break;
-            case 11:
-                scored = false;
-                if(follower.getPose().getX() < (16)) {
-                    follower.followPath(path3, true);
-                    timerStarted = false;
-                    setPathState(12);
-                }
-                break;
-            case 12:
-                if (pos.getDistance() < 1.25) {
-                    claw.closeClaw();
-                    if(!timerStarted){
-                        timerStarted = true;
-                        timer = pathTimer.getElapsedTimeSeconds();
-                    }
-                }
-                if(claw.isClosed() && (pathTimer.getElapsedTimeSeconds() - timer > 0.35)) {
-                    upper.goUp();
-                    follower.followPath(path8, true);
-                    setPathState(13);
-                }
-                break;
+                /*
             case 13:
-                if(upper.getHeight() > 600){
-                    upper.stayUp();
-                    setPathState(14);
-                }
-                break;
-            case 14:
                 if(follower.getPose().getX() > (38.131 - 1)) {
                     if(upper.getHeight() > RobotConstants.barHeight) {
                         upper.scoreDown();
                     }
                     else {
                         claw.openClaw();
-                        follower.followPath(path9, true);
+                        //follower.followPath(path2, true);
                     }
                     if(upper.getHeight() < 15) scored = true;
 
                 }
                 if (scored) {
                     upper.off();
-                    setPathState(15);
+                    setPathState(caseOrder[curCase++]);
                 }
-                break;
-            case 15:
-                scored = false;
-                if(follower.getPose().getX() < (16)) {
-                    follower.followPath(path3, true);
-                    timerStarted = false;
-                    setPathState(16);
-                }
-                break;
-            case 16:
-                if (pos.getDistance() < 1.25) {
-                    claw.closeClaw();
-                    if(!timerStarted){
-                        timerStarted = true;
-                        timer = pathTimer.getElapsedTimeSeconds();
-                    }
-                }
-                if(claw.isClosed() && (pathTimer.getElapsedTimeSeconds() - timer > 0.35)) {
-                    upper.goUp();
-                    follower.followPath(path10, true);
-                    setPathState(17);
-                }
-                break;
-            case 17:
-                if(upper.getHeight() > 600){
-                    upper.stayUp();
-                    setPathState(18);
-                }
-                break;
-            case 18:
-                if(follower.getPose().getX() > (38.131 - 1)) {
-                    if(upper.getHeight() > RobotConstants.barHeight) {
-                        upper.scoreDown();
-                    }
-                    else {
-                        claw.openClaw();
-                        follower.followPath(path11, true);
-                    }
-                    if(upper.getHeight() < 15) scored = true;
-
-                }
-                if (scored) {
-                    upper.off();
-                    setPathState(-1);
-                }
-                break;
+                break;*/
         }
     }
 

@@ -41,7 +41,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.teamcode.RobotConstants;
+import org.firstinspires.ftc.teamcode.subsystems.PositionSubsystem;
 
 /*
  * This OpMode executes a POV Game style Teleop for a direct drive robot
@@ -71,6 +73,7 @@ public class DriveTest extends LinearOpMode {
     public CRServo intake = null;
 
     public DistanceSensor lowerDistance = null;
+    public PositionSubsystem pos;
 
     boolean extending = false;
     boolean liftingUp = false;
@@ -105,6 +108,8 @@ public class DriveTest extends LinearOpMode {
         lower = hardwareMap.get(DcMotor.class, "lower");
         upper = hardwareMap.get(DcMotor.class, "upper");
         lowerDistance = hardwareMap.get(DistanceSensor.class, "lowerDistance");
+
+        pos = new PositionSubsystem(hardwareMap);
 
         upper.setDirection(DcMotor.Direction.REVERSE);
 
@@ -216,7 +221,7 @@ public class DriveTest extends LinearOpMode {
                 liftingUp = true;
             }
 
-            if (goingDown && upper.getCurrentPosition() < 0) {
+            if (goingDown && upper.getCurrentPosition() < 15) {
                 upper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 upper.setPower(0);
                 goingDown = false;
@@ -267,6 +272,11 @@ public class DriveTest extends LinearOpMode {
 
             telemetry.addData("upperPosition", upper.getCurrentPosition());
             telemetry.addData("lowerPosition", lowerDistance.getDistance(DistanceUnit.INCH));
+            if(pos.validResult()) {
+                telemetry.addData("X: ", pos.getX());
+                telemetry.addData("Y: ", pos.getY());
+                telemetry.addData("Heading: ", pos.getYaw());
+            }
             telemetry.update();
         }
     }
