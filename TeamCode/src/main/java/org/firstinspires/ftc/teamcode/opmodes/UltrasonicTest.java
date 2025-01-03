@@ -64,19 +64,11 @@ import org.firstinspires.ftc.teamcode.subsystems.PositionSubsystem;
 
 public class UltrasonicTest extends LinearOpMode {
 
-    public DistanceSensor lowerDistance = null;
 
-    private ModernRoboticsI2cRangeSensor sonic1;
-
-    private ModernRoboticsI2cRangeSensor sonic2;
-
-
+PositionSubsystem pos = null;
     @Override
     public void runOpMode() {
-
-        lowerDistance = hardwareMap.get(DistanceSensor.class, "lowerDistance");
-        sonic1 = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "sonic1");
-        sonic2 = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "sonic2");
+        pos = new PositionSubsystem(hardwareMap);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData(">", "Robot Ready.  Press START.");    //
@@ -87,16 +79,13 @@ public class UltrasonicTest extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+            telemetry.addData("distLeft", pos.getDistanceLeft());
+            telemetry.addData("distRight", pos.getDistanceRight());
+            telemetry.addData("distDiff", pos.getDistanceDifference());
+            telemetry.addData("heading", pos.getDistanceHeading());
+            telemetry.addData("distFromSubmersible", pos.getDistanceFromSubmersible());
+            telemetry.addData("x", pos.getPoseXSub());
 
-            telemetry.addData("sonic1level ", sonic1.getDistance(DistanceUnit.INCH));
-            telemetry.addData("sonic1status", sonic1.status());
-            telemetry.addData("sonic1hash", sonic1.hashCode());
-
-            telemetry.addData("sonic2level ", sonic2.getDistance(DistanceUnit.INCH));
-            telemetry.addData("sonic2status", sonic2.status());
-            telemetry.addData("sonic2hash", sonic2.hashCode());
-
-            telemetry.addData("distance", lowerDistance.getDistance(DistanceUnit.INCH));
             telemetry.update();
         }
     }

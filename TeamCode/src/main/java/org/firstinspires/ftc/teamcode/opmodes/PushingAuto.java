@@ -3,14 +3,12 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.*;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierLine;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
@@ -18,7 +16,6 @@ import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.PositionSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.UpperSubsystem;
 
-import java.util.concurrent.TimeUnit;
 import java.util.Arrays;
 
 @Autonomous(name = "PushingAuto", group = "Autonomous")
@@ -73,7 +70,11 @@ public class PushingAuto extends OpMode {
 
     private double[][] poses = new double[5][3];
     private double[] curResult = new double[3];
+    private double[] wallPosesLeft = new double[4];
+    private double[] wallPosesRight = new double[4];
     private int curI = 0;
+    private int curLeft = 0;
+    private int curRight = 0;
     public double lastX = 0;
     public int median = -1;
     private boolean timerStarted = false;
@@ -213,6 +214,8 @@ public class PushingAuto extends OpMode {
      * The followPath() function sets the follower to run the specific path, but does NOT wait for it to finish before moving on. */
     public double[] stepTimes = new double[50];
     public int curStep = 0;
+    public boolean timerStep = false;
+    public boolean localized = false;
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
@@ -260,24 +263,49 @@ public class PushingAuto extends OpMode {
                 }
                 if(median != -1){
                     follower.setPose(new Pose(poses[median][0], poses[median][1], poses[median][2]));
+                    localized = true;
                     follower.followPath(path3, true);
                     setPathState(4);
                 }
                 break;
             case 4:
                 if (follower.getPose().getX() < 13) {
-                    claw.closeClaw();
-                    if(!timerStarted){
-                        timerStarted = true;
-                        timer = pathTimer.getElapsedTimeSeconds();
+                    if(!localized) {
+                        wallPosesLeft[curLeft] = pos.getDistanceLeft();
+                        wallPosesRight[curRight] = pos.getDistanceRight();
+                        curLeft = (curLeft + 1) % 4;
+                        curRight = (curRight + 1) % 4;
+                        if (wallPosesLeft[3] != 0 && wallPosesRight[3] != 0) {
+                            double maxLeft = Arrays.stream(wallPosesLeft).max().getAsDouble();
+                            double maxRight = Arrays.stream(wallPosesRight).max().getAsDouble();
+                            double minLeft = Arrays.stream(wallPosesLeft).min().getAsDouble();
+                            double minRight = Arrays.stream(wallPosesRight).min().getAsDouble();
+
+                            if (maxLeft - minLeft < .25 && maxRight - minRight < .25) {
+                                wallPosesRight = new double[4];
+                                wallPosesLeft = new double[4];
+
+                                follower.setPose(new Pose(pos.getPoseXWall(), follower.getPose().getY(), pos.getDistanceHeading() + Math.PI));
+                                localized = true;
+                            }
+                        }
+                    } else {
+                        claw.closeClaw();
+                        if (!timerStarted) {
+                            timerStarted = true;
+                            timer = pathTimer.getElapsedTimeSeconds();
+                        }
                     }
                 }
                 if(claw.isClosed() && (pathTimer.getElapsedTimeSeconds() - timer > 0.35)) {
                     upper.goUp();
                     //follower.setPose(new Pose(8.875, 28.935, -180));
                     stepTimes[curStep++] = opmodeTimer.getElapsedTimeSeconds();
+
                     follower.followPath(path4, true);
                     setPathState(5);
+
+
                 }
                 break;
             case 5:
@@ -287,8 +315,12 @@ public class PushingAuto extends OpMode {
                     }
                     else {
                         claw.openClaw();
-                        if(stepTimes[curStep + 1] == 0) stepTimes[curStep++] = opmodeTimer.getElapsedTimeSeconds();
-                        follower.followPath(path5, true);
+                        if(!timerStep) {
+                            stepTimes[curStep++] = opmodeTimer.getElapsedTimeSeconds();
+                            timerStep = true;
+                            localized = false;
+                            follower.followPath(path5, true);
+                        }
                     }
                     if(upper.getHeight() < 15) scored = true;
                 } else if(upper.getHeight() > 600){
@@ -297,6 +329,8 @@ public class PushingAuto extends OpMode {
                 if (scored) {
                     upper.off();
                     scored = false;
+                    timerStep = false;
+                    timerStarted = false;
                     setPathState(4);
                 }
                 break;
@@ -325,8 +359,10 @@ public class PushingAuto extends OpMode {
         telemetry.addData("heading", follower.getPose().getHeading());
         telemetry.addData("Upper Height", upper.getHeight());
         telemetry.addData("Path timing", pathTimer.getElapsedTimeSeconds());
-        telemetry.addData("distance", pos.getDistance());
+        telemetry.addData("distance", pos.getDistanceLeft());
         telemetry.addData("upper height", upper.getHeight());
+        //telemetry.addData("submersibleX", pos.getPoseXSub());
+        //telemetry.addData("submersibleHeading", pos.getDistanceHeading());
         telemetry.addData("time 1:", stepTimes[0]);
         telemetry.addData("time 2 (push3 & pickup):", stepTimes[1] - stepTimes[0]);
         telemetry.addData("time 3 (p2s)", stepTimes[2]-stepTimes[1]);

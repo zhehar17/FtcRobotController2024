@@ -11,4 +11,9 @@ public class RobotConstants {
     public static double upperUpHoldPower = 0.1;
 
     public static double barHeight = 500;
+
+    public static double distBetweenSensors = 5;
+    public static double sensorToCenter = 7.8125;
+
+    public static double submersiblePosition = 50;
 }
