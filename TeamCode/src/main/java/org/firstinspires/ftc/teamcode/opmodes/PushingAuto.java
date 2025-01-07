@@ -66,7 +66,7 @@ public class PushingAuto extends OpMode {
 
     /* These are our Paths and PathChains that we will define in buildPaths() */
     //private Path scorePreload, park;
-    private PathChain path1, path2, path3, path4, path5;
+    private PathChain path1, path2, path3, path4, path5, path6, path7, path8, path9;
 
     private double[][] poses = new double[5][3];
     private double[] curResult = new double[3];
@@ -160,7 +160,7 @@ public class PushingAuto extends OpMode {
                         // Line 8
                         new BezierLine(
                                 new Point(30.000, 10.093, Point.CARTESIAN),
-                                new Point(20.000, 28.935, Point.CARTESIAN)
+                                new Point(20.000, 32.935, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(
@@ -171,8 +171,8 @@ public class PushingAuto extends OpMode {
                 .addPath(
                         // Line 1
                         new BezierLine(
-                                new Point(20, 28.935, Point.CARTESIAN),
-                                new Point(11.375 , 28.935, Point.CARTESIAN) //12.875
+                                new Point(20, 32.935, Point.CARTESIAN),
+                                new Point(10.875 , 28.935, Point.CARTESIAN) //12.875
                         )
                 )
                 .setLinearHeadingInterpolation(
@@ -184,26 +184,76 @@ public class PushingAuto extends OpMode {
                 .addPath(
                         // Line 1
                         new BezierCurve(
-                                new Point(11.375, 28.935, Point.CARTESIAN),
+                                new Point(10.875, 28.935, Point.CARTESIAN),
                                 //new Point(41.495, 22.879, Point.CARTESIAN),
                                 //new Point(8.299, 75.589, Point.CARTESIAN),
-                                new Point(38.131, 73.500, Point.CARTESIAN)
+                                new Point(39.631, 73.500, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(0))
                 .build();
-        path5 = follower.pathBuilder() //pickup to score
+        path5 = follower.pathBuilder() //score to pickup
                 .addPath(
                         // Line 1
                         new BezierCurve(
-                                new Point(38.131, 73.500, Point.CARTESIAN),
-                                new Point(11.375, 28.935, Point.CARTESIAN)
+                                new Point(40.631, 73.500, Point.CARTESIAN),
+                                new Point(20, 32.935, Point.CARTESIAN)
                                 //new Point(41.495, 22.879, Point.CARTESIAN),
                                 //new Point(8.299, 75.589, Point.CARTESIAN),
 
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-180 ))
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-180))
+                .build();
+        path6 = follower.pathBuilder() //pickup to score
+                .addPath(
+                        // Line 1
+                        new BezierCurve(
+                                new Point(10.875, 28.935, Point.CARTESIAN),
+                                //new Point(41.495, 22.879, Point.CARTESIAN),
+                                //new Point(8.299, 75.589, Point.CARTESIAN),
+                                new Point(40.131, 73.500, Point.CARTESIAN)
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(0))
+                .build();
+        path7 = follower.pathBuilder() //score to pickup
+                .addPath(
+                        // Line 1
+                        new BezierCurve(
+                                new Point(41.631, 73.500, Point.CARTESIAN),
+                                new Point(20, 32.935, Point.CARTESIAN)
+                                //new Point(41.495, 22.879, Point.CARTESIAN),
+                                //new Point(8.299, 75.589, Point.CARTESIAN),
+
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-180))
+                .build();
+        path8 = follower.pathBuilder() //pickup to score
+                .addPath(
+                        // Line 1
+                        new BezierCurve(
+                                new Point(10.875, 28.935, Point.CARTESIAN),
+                                //new Point(41.495, 22.879, Point.CARTESIAN),
+                                //new Point(8.299, 75.589, Point.CARTESIAN),
+                                new Point(39.631, 73.500, Point.CARTESIAN)
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(0))
+                .build();
+        path9 = follower.pathBuilder() //relocalize to wall
+                .addPath(
+                        // Line 1
+                        new BezierLine(
+                                new Point(20, 32.935, Point.CARTESIAN),
+                                new Point(11.375 , 28.935, Point.CARTESIAN) //12.875
+                        )
+                )
+                .setLinearHeadingInterpolation(
+                        Math.toRadians(-180),
+                        Math.toRadians(-180)
+                )
                 .build();
     }
 
@@ -212,21 +262,23 @@ public class PushingAuto extends OpMode {
     /** This switch is called continuously and runs the pathing, at certain points, it triggers the action state.
      * Everytime the switch changes case, it will reset the timer. (This is because of the setPathState() method)
      * The followPath() function sets the follower to run the specific path, but does NOT wait for it to finish before moving on. */
+    public int[] caseOrder = {0,1,2,3,4,5,10,6,7,10,8,9};
+    public int curCase = 0;
     public double[] stepTimes = new double[50];
     public int curStep = 0;
     public boolean timerStep = false;
-    public boolean localized = false;
+    //public boolean localized = false;
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
                 follower.followPath(path1, true);
                 upper.goUp();
-                setPathState(1);
+                setPathState(caseOrder[curCase++]);
                 break;
             case 1:
-                if(upper.getHeight() > 600){
+                if(upper.getHeight() > 560){
                     upper.stayUp();
-                    setPathState(2);
+                    setPathState(caseOrder[curCase++]);
                 }
                 break;
             case 2:
@@ -236,7 +288,7 @@ public class PushingAuto extends OpMode {
                     }
                     else {
                         claw.openClaw();
-                        stepTimes[0] = opmodeTimer.getElapsedTimeSeconds();
+                        //stepTimes[0] = opmodeTimer.getElapsedTimeSeconds();
                         follower.followPath(path2, true);
                     }
                     if(upper.getHeight() < 15) scored = true;
@@ -245,7 +297,7 @@ public class PushingAuto extends OpMode {
                 if (scored) {
                     upper.off();
                     scored = false;
-                    setPathState(3);
+                    setPathState(caseOrder[curCase++]);
                 }
                 break;
             case 3: // Relocalize
@@ -263,62 +315,42 @@ public class PushingAuto extends OpMode {
                 }
                 if(median != -1){
                     follower.setPose(new Pose(poses[median][0], poses[median][1], poses[median][2]));
-                    localized = true;
+                    //localized = true;
                     follower.followPath(path3, true);
-                    setPathState(4);
+                    poses = new double[5][3];
+                    curResult = new double[3];
+                    curI = 0;
+                    lastX = 0;
+                    median = -1;
+                    setPathState(caseOrder[curCase++]);
                 }
                 break;
             case 4:
-                if (follower.getPose().getX() < 13) {
-                    if(!localized) {
-                        wallPosesLeft[curLeft] = pos.getDistanceLeft();
-                        wallPosesRight[curRight] = pos.getDistanceRight();
-                        curLeft = (curLeft + 1) % 4;
-                        curRight = (curRight + 1) % 4;
-                        if (wallPosesLeft[3] != 0 && wallPosesRight[3] != 0) {
-                            double maxLeft = Arrays.stream(wallPosesLeft).max().getAsDouble();
-                            double maxRight = Arrays.stream(wallPosesRight).max().getAsDouble();
-                            double minLeft = Arrays.stream(wallPosesLeft).min().getAsDouble();
-                            double minRight = Arrays.stream(wallPosesRight).min().getAsDouble();
-
-                            if (maxLeft - minLeft < .25 && maxRight - minRight < .25) {
-                                wallPosesRight = new double[4];
-                                wallPosesLeft = new double[4];
-
-                                follower.setPose(new Pose(pos.getPoseXWall(), follower.getPose().getY(), pos.getDistanceHeading() + Math.PI));
-                                localized = true;
-                            }
-                        }
-                    } else {
-                        claw.closeClaw();
-                        if (!timerStarted) {
-                            timerStarted = true;
-                            timer = pathTimer.getElapsedTimeSeconds();
-                        }
+                if (follower.getPose().getX() < 11.5) {
+                    claw.closeClaw();
+                    if (!timerStarted) {
+                        timerStarted = true;
+                        timer = pathTimer.getElapsedTimeSeconds();
                     }
                 }
                 if(claw.isClosed() && (pathTimer.getElapsedTimeSeconds() - timer > 0.35)) {
                     upper.goUp();
-                    //follower.setPose(new Pose(8.875, 28.935, -180));
-                    stepTimes[curStep++] = opmodeTimer.getElapsedTimeSeconds();
-
+                    //stepTimes[curStep++] = opmodeTimer.getElapsedTimeSeconds();
                     follower.followPath(path4, true);
-                    setPathState(5);
-
-
+                    setPathState(caseOrder[curCase++]);
                 }
                 break;
             case 5:
-                if(follower.getPose().getX() > (38.131 - 1)) {
+                if(follower.getPose().getX() > (39.631 - .5)) {
                     if(upper.getHeight() > RobotConstants.barHeight) {
                         upper.scoreDown();
                     }
                     else {
                         claw.openClaw();
                         if(!timerStep) {
-                            stepTimes[curStep++] = opmodeTimer.getElapsedTimeSeconds();
+                            //stepTimes[curStep++] = opmodeTimer.getElapsedTimeSeconds();
                             timerStep = true;
-                            localized = false;
+                            //localized = false;
                             follower.followPath(path5, true);
                         }
                     }
@@ -331,7 +363,105 @@ public class PushingAuto extends OpMode {
                     scored = false;
                     timerStep = false;
                     timerStarted = false;
-                    setPathState(4);
+                    setPathState(caseOrder[curCase++]);
+                }
+                break;
+            case 6:
+                if (follower.getPose().getX() < 11.75) {
+                    claw.closeClaw();
+                    if (!timerStarted) {
+                        timerStarted = true;
+                        timer = pathTimer.getElapsedTimeSeconds();
+                    }
+                }
+                if(claw.isClosed() && (pathTimer.getElapsedTimeSeconds() - timer > 0.35)) {
+                    upper.goUp();
+                    //stepTimes[curStep++] = opmodeTimer.getElapsedTimeSeconds();
+                    follower.followPath(path6, true);
+                    setPathState(caseOrder[curCase++]);
+                }
+                break;
+            case 7:
+                if(follower.getPose().getX() > (40.131 - .5)) {
+                    if(upper.getHeight() > RobotConstants.barHeight) {
+                        upper.scoreDown();
+                    }
+                    else {
+                        claw.openClaw();
+                        if(!timerStep) {
+                            //stepTimes[curStep++] = opmodeTimer.getElapsedTimeSeconds();
+                            timerStep = true;
+                            //localized = false;
+                            follower.followPath(path7, true);
+                        }
+                    }
+                    if(upper.getHeight() < 15) scored = true;
+                } else if(upper.getHeight() > 600){
+                    upper.stayUp();
+                }
+                if (scored) {
+                    upper.off();
+                    scored = false;
+                    timerStep = false;
+                    timerStarted = false;
+                    setPathState(caseOrder[curCase++]);
+                }
+                break;
+            case 8:
+                if (follower.getPose().getX() < 11.75) {
+                    claw.closeClaw();
+                    if (!timerStarted) {
+                        timerStarted = true;
+                        timer = pathTimer.getElapsedTimeSeconds();
+                    }
+                }
+                if(claw.isClosed() && (pathTimer.getElapsedTimeSeconds() - timer > 0.35)) {
+                    upper.goUp();
+                    //stepTimes[curStep++] = opmodeTimer.getElapsedTimeSeconds();
+                    follower.followPath(path8, true);
+                    setPathState(caseOrder[curCase++]);
+                }
+                break;
+            case 9:
+                if(follower.getPose().getX() > (39.131 - 1)) {
+                    if(upper.getHeight() > RobotConstants.barHeight) {
+                        upper.scoreDown();
+                    }
+                    else {
+                        claw.openClaw();
+                        //stepTimes[0] = opmodeTimer.getElapsedTimeSeconds();
+                    }
+                    if(upper.getHeight() < 15) scored = true;
+
+                }
+                if (scored) {
+                    upper.off();
+                    scored = false;
+                    setPathState(-1);
+                }
+            case 10:
+                if(follower.getPose().getX() < (20.25) && !follower.isBusy() && pos.validResult() && pos.getX() != lastX && poses[4][0] == 0){
+                    poses[curI] = new double[]{pos.getX(), pos.getY(), Math.toRadians(pos.getYaw())};
+                    lastX = poses[curI][0];
+                    curI++;
+                }
+                if(poses[4][0] != 0 && median == -1){
+                    double[] arr = {poses[0][0], poses[1][0], poses[2][0], poses[3][0], poses[4][0]};
+                    Arrays.sort(arr);
+                    for(int i = 0; i < 5; i++){
+                        if(poses[i][0] == arr[2]) median = i;
+                    }
+                }
+                if(median != -1){
+                    follower.setPose(new Pose(poses[median][0], poses[median][1], poses[median][2]));
+                    //localized = true;
+                    follower.followPath(path9, true);
+                    poses = new double[5][3];
+                    curResult = new double[3];
+                    curI = 0;
+                    lastX = 0;
+                    median = -1;
+                    setPathState(caseOrder[curCase++]);
                 }
                 break;
         }
@@ -354,12 +484,12 @@ public class PushingAuto extends OpMode {
 
         // Feedback to Driver Hub
         telemetry.addData("path state", pathState);
+        //telemetry.addData("case state", caseOrder[curCase]);
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
         telemetry.addData("Upper Height", upper.getHeight());
         telemetry.addData("Path timing", pathTimer.getElapsedTimeSeconds());
-        telemetry.addData("distance", pos.getDistanceLeft());
         telemetry.addData("upper height", upper.getHeight());
         //telemetry.addData("submersibleX", pos.getPoseXSub());
         //telemetry.addData("submersibleHeading", pos.getDistanceHeading());

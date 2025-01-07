@@ -15,13 +15,10 @@ import java.lang.Math;
 public class PositionSubsystem {
     private Limelight3A limelight;
     private LLResult result;
-    private DistanceSensor distance;
-    private DistanceSensor distance2;
+
 
     public PositionSubsystem(HardwareMap hardwareMap) {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        distance = hardwareMap.get(DistanceSensor.class, "lowerDistance");
-        distance2 = hardwareMap.get(DistanceSensor.class, "distance2");
         limelight.pipelineSwitch(0);
 
         /*
@@ -53,39 +50,6 @@ public class PositionSubsystem {
 
     public double getYaw(){
         return result.getBotpose().getOrientation().getYaw() + 90;
-    }
-
-    public double getDistanceLeft() {
-        return distance.getDistance(DistanceUnit.INCH);
-    }
-
-    public double getDistanceRight() {
-        return distance2.getDistance(DistanceUnit.INCH);
-    }
-
-    public double getDistanceDifference() {
-        return distance.getDistance(DistanceUnit.INCH) - distance2.getDistance(DistanceUnit.INCH);
-    }
-
-    public double getDistanceHeading() {
-        return Math.atan(getDistanceDifference() / RobotConstants.distBetweenSensors);
-    }
-
-    public double getDistanceFromSubmersible() {
-        double avg = (getDistanceLeft() + getDistanceRight()) /2;
-        double angledDist = avg + RobotConstants.sensorToCenter;
-        double distToSubmersible = angledDist * Math.cos(getDistanceHeading());
-        return distToSubmersible;
-    }
-
-    public double getPoseXWall() {
-        double avg = (getDistanceLeft() + getDistanceRight()) /2;
-        double angledDist = avg + RobotConstants.sensorToCenter;
-        double distToWall = angledDist * Math.cos(getDistanceHeading());
-        return distToWall + 3;
-    }
-    public double getPoseXSub() {
-        return RobotConstants.submersiblePosition - getDistanceFromSubmersible();
     }
 
 }

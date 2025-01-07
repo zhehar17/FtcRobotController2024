@@ -227,7 +227,7 @@ public class DriveTest extends LinearOpMode {
                 goingDown = false;
             }
 
-            if (liftingUp && upper.getCurrentPosition() > 600) {
+            if (liftingUp && upper.getCurrentPosition() > 575) {
                 upper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 upper.setPower(RobotConstants.upperUpHoldPower);
                 liftingUp = false;

@@ -239,7 +239,7 @@ public class TestingAuto extends OpMode {
         telemetry.addData("heading", follower.getPose().getHeading());
         telemetry.addData("Upper Height", upper.getHeight());
         telemetry.addData("Path timing", pathTimer.getElapsedTimeSeconds());
-        telemetry.addData("distance", pos.getDistanceLeft());
+        //telemetry.addData("distance", pos.getDistanceLeft());
         telemetry.addData("upper height", upper.getHeight());
         if(pos.validResult()){
             telemetry.addData("llxyhead", "lly", pos.getX(), pos.getY(), Math.toRadians(pos.getYaw()));            telemetry.addLine("x " + pos.getX() + " y " + pos.getY() + " yaw " + Math.toRadians(pos.getYaw()));

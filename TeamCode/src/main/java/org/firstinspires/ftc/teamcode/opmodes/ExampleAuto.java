@@ -473,7 +473,6 @@ public class ExampleAuto extends OpMode {
         telemetry.addData("heading", follower.getPose().getHeading());
         telemetry.addData("Upper Height", upper.getHeight());
         telemetry.addData("Path timing", pathTimer.getElapsedTimeSeconds());
-        telemetry.addData("distance", pos.getDistanceLeft());
         telemetry.addData("upper height", upper.getHeight());
         telemetry.update();
     }
