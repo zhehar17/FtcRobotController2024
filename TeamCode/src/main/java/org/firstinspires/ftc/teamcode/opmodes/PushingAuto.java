@@ -172,7 +172,7 @@ public class PushingAuto extends OpMode {
                         // Line 1
                         new BezierLine(
                                 new Point(20, 32.935, Point.CARTESIAN),
-                                new Point(10.875 , 28.935, Point.CARTESIAN) //12.875
+                                new Point(11.875 , 28.935, Point.CARTESIAN) //12.875
                         )
                 )
                 .setLinearHeadingInterpolation(
@@ -197,7 +197,7 @@ public class PushingAuto extends OpMode {
                         // Line 1
                         new BezierCurve(
                                 new Point(40.631, 73.500, Point.CARTESIAN),
-                                new Point(20, 32.935, Point.CARTESIAN)
+                                new Point(20, 32.435, Point.CARTESIAN)
                                 //new Point(41.495, 22.879, Point.CARTESIAN),
                                 //new Point(8.299, 75.589, Point.CARTESIAN),
 
@@ -209,7 +209,7 @@ public class PushingAuto extends OpMode {
                 .addPath(
                         // Line 1
                         new BezierCurve(
-                                new Point(10.875, 28.935, Point.CARTESIAN),
+                                new Point(11.875, 28.935, Point.CARTESIAN),
                                 //new Point(41.495, 22.879, Point.CARTESIAN),
                                 //new Point(8.299, 75.589, Point.CARTESIAN),
                                 new Point(40.131, 73.500, Point.CARTESIAN)
@@ -222,7 +222,7 @@ public class PushingAuto extends OpMode {
                         // Line 1
                         new BezierCurve(
                                 new Point(41.631, 73.500, Point.CARTESIAN),
-                                new Point(20, 32.935, Point.CARTESIAN)
+                                new Point(20, 32.35, Point.CARTESIAN)
                                 //new Point(41.495, 22.879, Point.CARTESIAN),
                                 //new Point(8.299, 75.589, Point.CARTESIAN),
 
@@ -234,7 +234,7 @@ public class PushingAuto extends OpMode {
                 .addPath(
                         // Line 1
                         new BezierCurve(
-                                new Point(10.875, 28.935, Point.CARTESIAN),
+                                new Point(11.875, 28.935, Point.CARTESIAN),
                                 //new Point(41.495, 22.879, Point.CARTESIAN),
                                 //new Point(8.299, 75.589, Point.CARTESIAN),
                                 new Point(39.631, 73.500, Point.CARTESIAN)
@@ -247,7 +247,7 @@ public class PushingAuto extends OpMode {
                         // Line 1
                         new BezierLine(
                                 new Point(20, 32.935, Point.CARTESIAN),
-                                new Point(11.375 , 28.935, Point.CARTESIAN) //12.875
+                                new Point(11.875 , 28.935, Point.CARTESIAN) //12.875
                         )
                 )
                 .setLinearHeadingInterpolation(
@@ -326,7 +326,7 @@ public class PushingAuto extends OpMode {
                 }
                 break;
             case 4:
-                if (follower.getPose().getX() < 11.5) {
+                if (follower.getPose().getX() < 12.5) {
                     claw.closeClaw();
                     if (!timerStarted) {
                         timerStarted = true;
@@ -367,7 +367,7 @@ public class PushingAuto extends OpMode {
                 }
                 break;
             case 6:
-                if (follower.getPose().getX() < 11.75) {
+                if (follower.getPose().getX() < 12) {
                     claw.closeClaw();
                     if (!timerStarted) {
                         timerStarted = true;
@@ -408,7 +408,7 @@ public class PushingAuto extends OpMode {
                 }
                 break;
             case 8:
-                if (follower.getPose().getX() < 11.75) {
+                if (follower.getPose().getX() < 12) {
                     claw.closeClaw();
                     if (!timerStarted) {
                         timerStarted = true;
@@ -440,7 +440,7 @@ public class PushingAuto extends OpMode {
                     setPathState(-1);
                 }
             case 10:
-                if(follower.getPose().getX() < (20.25) && !follower.isBusy() && pos.validResult() && pos.getX() != lastX && poses[4][0] == 0){
+                if(follower.getPose().getX() < (24.25) && !follower.isBusy() && pos.validResult() && pos.getX() != lastX && poses[4][0] == 0){
                     poses[curI] = new double[]{pos.getX(), pos.getY(), Math.toRadians(pos.getYaw())};
                     lastX = poses[curI][0];
                     curI++;

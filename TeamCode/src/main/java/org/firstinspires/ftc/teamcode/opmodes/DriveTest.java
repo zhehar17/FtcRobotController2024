@@ -72,6 +72,9 @@ public class DriveTest extends LinearOpMode {
     public Servo claw = null;
     public CRServo intake = null;
 
+    public Servo wrist = null;
+    public Servo grabber = null;
+
     public DistanceSensor lowerDistance = null;
     public PositionSubsystem pos;
 
@@ -82,6 +85,8 @@ public class DriveTest extends LinearOpMode {
     boolean slow = false;
     boolean clawClosed = true;
     boolean lowerCapped = false;
+
+    boolean grabberClosed = false;
 
     @Override
     public void runOpMode() {
@@ -108,6 +113,9 @@ public class DriveTest extends LinearOpMode {
         lower = hardwareMap.get(DcMotor.class, "lower");
         upper = hardwareMap.get(DcMotor.class, "upper");
         lowerDistance = hardwareMap.get(DistanceSensor.class, "lowerDistance");
+
+        wrist = hardwareMap.get(Servo.class, "wrist");
+        grabber = hardwareMap.get(Servo.class, "grabber");
 
         pos = new PositionSubsystem(hardwareMap);
 
@@ -233,7 +241,20 @@ public class DriveTest extends LinearOpMode {
                 liftingUp = false;
             }
 
+            if(gamepad2.dpad_up) {
+                wrist.setPosition(1);
+            }
 
+            if(gamepad2.dpad_down) {
+                wrist.setPosition(0);
+            }
+
+            if (gamepad2.dpad_right) {
+                if (grabberClosed) grabber.setPosition(0);
+                else grabber.setPosition(1);
+                sleep(125);
+                grabberClosed = !grabberClosed;
+            }
 
             //Debug Upper, try not to use
             if (gamepad1.dpad_up) {
