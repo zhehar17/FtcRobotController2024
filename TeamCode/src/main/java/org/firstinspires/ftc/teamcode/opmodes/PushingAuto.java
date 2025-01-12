@@ -437,7 +437,9 @@ public class PushingAuto extends OpMode {
                 if (scored) {
                     upper.off();
                     scored = false;
+                    upper.bottomoff();
                     setPathState(-1);
+
                 }
             case 10:
                 if(follower.getPose().getX() < (24.25) && !follower.isBusy() && pos.validResult() && pos.getX() != lastX && poses[4][0] == 0){
@@ -531,6 +533,7 @@ public class PushingAuto extends OpMode {
         upper = new UpperSubsystem(hardwareMap);
         pos = new PositionSubsystem(hardwareMap);
 
+        upper.bottomon();
         claw.closeClaw();
 
     }

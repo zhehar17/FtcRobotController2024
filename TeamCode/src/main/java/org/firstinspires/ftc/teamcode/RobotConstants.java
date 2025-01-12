@@ -4,7 +4,7 @@ public class RobotConstants {
 
     /** Variables are positions for the claw servos. **/
     public static double openClawPos = 0.25;
-    public static double closedClawPos = 0.56;
+    public static double closedClawPos = 0.64;
 
     public static double upperUpPower =  0.9;
     public static double upperDownPower = -0.7;

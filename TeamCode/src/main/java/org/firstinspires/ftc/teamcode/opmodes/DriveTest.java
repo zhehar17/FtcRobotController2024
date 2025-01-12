@@ -70,7 +70,7 @@ public class DriveTest extends LinearOpMode {
     public DcMotor lower = null;
     public DcMotor upper = null;
     public Servo claw = null;
-    public CRServo intake = null;
+    //public CRServo intake = null;
 
     public Servo wrist = null;
     public Servo grabber = null;
@@ -112,7 +112,7 @@ public class DriveTest extends LinearOpMode {
         // Define and Initialize Motors
         lower = hardwareMap.get(DcMotor.class, "lower");
         upper = hardwareMap.get(DcMotor.class, "upper");
-        lowerDistance = hardwareMap.get(DistanceSensor.class, "lowerDistance");
+        //lowerDistance = hardwareMap.get(DistanceSensor.class, "lowerDistance");
 
         wrist = hardwareMap.get(Servo.class, "wrist");
         grabber = hardwareMap.get(Servo.class, "grabber");
@@ -122,7 +122,7 @@ public class DriveTest extends LinearOpMode {
         upper.setDirection(DcMotor.Direction.REVERSE);
 
         claw = hardwareMap.get(Servo.class, "claw");
-        intake = hardwareMap.get(CRServo.class, "intake");
+       // intake = hardwareMap.get(CRServo.class, "intake");
         claw.setPosition(0.56);
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
@@ -131,6 +131,9 @@ public class DriveTest extends LinearOpMode {
         // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
         upper.setTargetPosition(0);
         upper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        lower.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lower.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData(">", "Robot Ready.  Press START.");    //
@@ -172,15 +175,13 @@ public class DriveTest extends LinearOpMode {
             //if (winch.getCurrentPosition() < -17000) lowerCapped = true;
             lowerCapped = false;
 
-            if (gamepad1.a) lowerCapped = false;
-
-            if (gamepad2.right_trigger != 0 && !lowerCapped) {
+            if (gamepad2.right_trigger != 0) {
                 lower.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                extend = gamepad2.right_trigger*0.55;
+                extend = gamepad2.right_trigger;
                 extending = false;
-            } else if (gamepad2.left_trigger != 0) {
+            } else if (gamepad2.left_trigger != 0 && lower.getCurrentPosition() > -1800) {
                 lower.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                extend = -gamepad2.left_trigger*0.25;
+                extend = -gamepad2.left_trigger;
                 extending = false;
             } else {
                 extend = 0;
@@ -246,7 +247,7 @@ public class DriveTest extends LinearOpMode {
             }
 
             if(gamepad2.dpad_down) {
-                wrist.setPosition(0);
+                wrist.setPosition(0.3);
             }
 
             if (gamepad2.dpad_right) {
@@ -292,7 +293,7 @@ public class DriveTest extends LinearOpMode {
             */
 
             telemetry.addData("upperPosition", upper.getCurrentPosition());
-            telemetry.addData("lowerPosition", lowerDistance.getDistance(DistanceUnit.INCH));
+            telemetry.addData("lowerPosition", lower.getCurrentPosition());
             if(pos.validResult()) {
                 telemetry.addData("X: ", pos.getX());
                 telemetry.addData("Y: ", pos.getY());

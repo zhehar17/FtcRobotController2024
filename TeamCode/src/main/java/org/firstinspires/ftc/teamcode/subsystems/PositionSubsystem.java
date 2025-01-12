@@ -41,14 +41,24 @@ public class PositionSubsystem {
     }
 
     public double getX(){
+        if(-(result.getBotpose().getPosition().y * 39.3701) + 72  > 72){
+            return (result.getBotpose().getPosition().y * 39.3701) + 72;
+        }
         return -(result.getBotpose().getPosition().y * 39.3701) + 72;
+
     }
 
     public double getY(){
+        if(result.getBotpose().getPosition().x * 39.3701 + 72 > 72){
+            return -result.getBotpose().getPosition().x * 39.3701 + 72;
+        }
         return result.getBotpose().getPosition().x * 39.3701 + 72;
     }
 
     public double getYaw(){
+        if(result.getBotpose().getPosition().x * 39.3701 + 72 > 72){
+            return result.getBotpose().getOrientation().getYaw() - 90;
+        }
         return result.getBotpose().getOrientation().getYaw() + 90;
     }
 
