@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 
 public class UpperSubsystem {
     private DcMotor upper;
-    private DcMotor lower;
+    private boolean up;
 
     public UpperSubsystem(HardwareMap hardwareMap) {
         upper = hardwareMap.get(DcMotor.class, "upper");
@@ -15,26 +15,26 @@ public class UpperSubsystem {
         upper.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         upper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         upper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        lower = hardwareMap.get(DcMotor.class, "lower");
     }
 
-    public void bottomoff(){
-        lower.setPower(0);
+    public boolean isUp(){
+        return up;
     }
-    public void bottomon(){
-        lower.setPower(0.02);
-    }
+
+
     public void goUp(){
         upper.setPower(RobotConstants.upperUpPower);
+        up = true;
     }
 
     public void stayUp(){
         upper.setPower(RobotConstants.upperUpHoldPower);
+        up = false;
     }
 
     public void scoreDown(){
         upper.setPower(RobotConstants.upperDownPower);
+        up = false;
     }
     public void floorDown(){
         upper.setPower(-0.2);
@@ -42,6 +42,7 @@ public class UpperSubsystem {
 
     public void off(){
         upper.setPower(0);
+        up = false;
     }
 
     public double getHeight(){

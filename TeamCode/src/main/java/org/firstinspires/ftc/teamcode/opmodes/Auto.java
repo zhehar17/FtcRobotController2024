@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -150,7 +151,7 @@ public class Auto extends LinearOpMode {
         public class CloseClaw implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                claw.setPosition(1);
+                claw.setPosition(0.6);
                 sleep(500);
                 return false;
             }
@@ -162,7 +163,7 @@ public class Auto extends LinearOpMode {
         public class OpenClaw implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                claw.setPosition(.2);
+                claw.setPosition(.25);
                 return false;
             }
         }
@@ -269,28 +270,9 @@ public class Auto extends LinearOpMode {
         trajectoryActionEleven = tab11.build();
 
         Actions.runBlocking(
-                new SequentialAction(
-                        //lift.liftUp(),
-                        trajectoryActionOne,
-                        //lift.liftDownToScore(),
-                        //claw.openClaw(),
-                        //lift.liftDownToPickup(),
-                        trajectoryActionTwo,
-                        trajectoryActionThree,
-                        //claw.closeClaw(),
-                        //lift.liftUp(),
-                        trajectoryActionFour,
-                        //lift.liftDownToScore(),
-                        //claw.openClaw(),
-                        //lift.liftDownToPickup(),
-                        trajectoryActionFive,
-                        //claw.closeClaw(),
-                        //lift.liftUp(),
-                        trajectoryActionSix,
-                        //lift.liftDownToScore(),
-                        //claw.openClaw(),
-                        //lift.liftDownToPickup()
-                        trajectoryActionEleven
+                new ParallelAction(
+                        lift.liftUp(),
+                        trajectoryActionOne
                        /*
                         trajectoryActionSeven,
                         lift.liftDownToScore(),
@@ -305,6 +287,65 @@ public class Auto extends LinearOpMode {
                         claw.openClaw(),
                         lift.liftDownToPickup(),
                         trajectoryActionEleven*/
+                )
+        );
+        Actions.runBlocking(
+                new SequentialAction(
+                        lift.liftDownToScore()
+                )
+        );
+        Actions.runBlocking(
+                new ParallelAction(
+                        claw.openClaw(),
+                        lift.liftDownToPickup(),
+                        trajectoryActionTwo
+                )
+        );
+        Actions.runBlocking(
+                new SequentialAction(
+                        trajectoryActionThree,
+                        claw.closeClaw()
+                )
+        );
+        Actions.runBlocking(
+                new ParallelAction(
+                        lift.liftUp(),
+                        trajectoryActionFour
+                )
+        );
+        Actions.runBlocking(
+                new SequentialAction(
+                        lift.liftDownToScore()
+                )
+        );
+        Actions.runBlocking(
+                new ParallelAction(
+                        claw.openClaw(),
+                        lift.liftDownToPickup(),
+                        trajectoryActionFive
+                )
+        );
+        Actions.runBlocking(
+                new SequentialAction(
+                        claw.closeClaw()
+                )
+        );
+        Actions.runBlocking(
+                new ParallelAction(
+                        lift.liftUp(),
+                        trajectoryActionSix
+                )
+        );
+        Actions.runBlocking(
+                new SequentialAction(
+                        lift.liftDownToScore()
+                )
+        );
+        Actions.runBlocking(
+                new ParallelAction(
+                        claw.openClaw(),
+                        lift.liftDownToPickup(),
+                        trajectoryActionEleven
                 )
         );
     }

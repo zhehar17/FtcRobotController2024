@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LowerSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.PositionSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.UpperSubsystem;
 
@@ -32,6 +33,7 @@ public class PushingAuto extends OpMode {
     public ClawSubsystem claw;
     public UpperSubsystem upper;
     public PositionSubsystem pos;
+    public LowerSubsystem lower;
 
     /** Create and Define Poses + Paths
      * Poses are built with three constructors: x, y, and heading (in Radians).
@@ -437,7 +439,7 @@ public class PushingAuto extends OpMode {
                 if (scored) {
                     upper.off();
                     scored = false;
-                    upper.bottomoff();
+                    lower.bottomoff();
                     setPathState(-1);
 
                 }
@@ -532,8 +534,9 @@ public class PushingAuto extends OpMode {
         claw = new ClawSubsystem(hardwareMap);
         upper = new UpperSubsystem(hardwareMap);
         pos = new PositionSubsystem(hardwareMap);
+        lower = new LowerSubsystem(hardwareMap);
 
-        upper.bottomon();
+        lower.bottomon();
         claw.closeClaw();
 
     }
