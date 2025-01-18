@@ -146,7 +146,7 @@ public class TeleOpEnhancements extends OpMode {
                 }
                 break;
             case 3:
-                if(upper.getHeight() > 560){
+                if(upper.getHeight() > 540){
                     upper.stayUp();
                     feedforward = true;
                     curAct = 4;

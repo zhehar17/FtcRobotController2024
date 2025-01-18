@@ -78,7 +78,7 @@ public class ThreeAuto extends OpMode {
     //Pose variables
     private double pickupX = 10; //9
     private double pickupY = 20; //20
-    private double scoreX = 38;
+    private double scoreX = 37;
     public void buildPaths() {
         path1 = follower.pathBuilder() //Start to score
                 .addPath(
@@ -113,11 +113,28 @@ public class ThreeAuto extends OpMode {
                         // Line 3
                         new BezierCurve(
                                 new Point(22.000, 16.000, Point.CARTESIAN),
+                                new Point(58.000, 33.000, Point.CARTESIAN),
+                                new Point(58.000, 16.000, Point.CARTESIAN)
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(200), Math.toRadians(180))
+                .addPath(
+                        // Line 4
+                        new BezierLine(
+                                new Point(58.000, 16.000, Point.CARTESIAN),
+                                new Point(20.000, 16.000, Point.CARTESIAN)
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                .addPath(
+                        // Line 5
+                        new BezierCurve(
+                                new Point(20.000, 16.000, Point.CARTESIAN),
                                 new Point(30.000, 22.000, Point.CARTESIAN),
                                 new Point(pickupX, pickupY, Point.CARTESIAN)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(200), Math.toRadians(180))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                 .build();
         path3 = follower.pathBuilder() //move forward pickup
                 .addPath(
@@ -198,13 +215,13 @@ public class ThreeAuto extends OpMode {
                 setPathState(caseOrder[curCase++]);
                 break;
             case 1://hold up
-                if(upper.getHeight() > 560){
+                if(upper.getHeight() > 540){
                     upper.stayUp();
                     setPathState(caseOrder[curCase++]);
                 }
                 break;
             case 2://score then move
-                if(follower.getPose().getX() > (39)) {
+                if(follower.getPose().getX() > (36.5)) {
                     if(upper.getHeight() > RobotConstants.barHeight) {
                         upper.scoreDown();
                     }
@@ -237,7 +254,7 @@ public class ThreeAuto extends OpMode {
                 }
                 break;
             case 4: //score to pickup
-                if(follower.getPose().getX() > (39)) {
+                if(follower.getPose().getX() > (36.5)) {
                     if(upper.getHeight() > RobotConstants.barHeight) {
                         upper.scoreDown();
                     }
@@ -251,7 +268,7 @@ public class ThreeAuto extends OpMode {
                         }
                     }
                     if(upper.getHeight() < 15) scored = true;
-                } else if(upper.getHeight() > 560){
+                } else if(upper.getHeight() > 540){
                     upper.stayUp();
                 }
                 if (scored) {
@@ -278,7 +295,7 @@ public class ThreeAuto extends OpMode {
                 }
                 break;
             case 6:
-                if(follower.getPose().getX() > (39)) {
+                if(follower.getPose().getX() > (36.5)) {
                     if(upper.getHeight() > RobotConstants.barHeight) {
                         upper.scoreDown();
                     }
@@ -292,7 +309,7 @@ public class ThreeAuto extends OpMode {
                         }
                     }
                     if(upper.getHeight() < 15) scored = true;
-                } else if(upper.getHeight() > 560){
+                } else if(upper.getHeight() > 540){
                     upper.stayUp();
                 }
                 if (scored) {
