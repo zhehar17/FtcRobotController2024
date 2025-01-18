@@ -119,6 +119,8 @@ public class TeleOpEnhancements extends OpMode {
     private double timer;
     private double actionTimer;
 
+    private boolean feedforward = false;
+
     /* Tele Enhancements
         1-2-3-4 pickup to score
         5 score
@@ -144,8 +146,9 @@ public class TeleOpEnhancements extends OpMode {
                 }
                 break;
             case 3:
-                if(upper.getHeight() > 600){
+                if(upper.getHeight() > 560){
                     upper.stayUp();
+                    feedforward = true;
                     curAct = 4;
                 }
                 break;
@@ -153,11 +156,13 @@ public class TeleOpEnhancements extends OpMode {
                 if(follower.getPose().getX() > (42)) {
                     follower.startTeleopDrive();
                     curAct = 0;
+                    feedforward = false;
                 }
                 break;
             case 5:
                 if(upper.getHeight() > RobotConstants.barHeight) {
                     upper.scoreDown();
+
                 }
                 else {
                     claw.openClaw();
@@ -198,33 +203,21 @@ public class TeleOpEnhancements extends OpMode {
                     curAct = 0;
                 }
                 break;
-            case 11:
+            /*case 11:
                 lower.extend();
-                if(lower.getPosition() < -2300){
+                if(lower.getPosition() < -1800){
                     curAct = 12;
                 }
                 break;
             case 12:
                 lower.retract();
                 curAct = 0;
-                break;
+                break;*/
         }
     }
     @Override
     public void loop() {
-        /*
-        switch (curAct) {
-            case 0:
-                if (gamepad1.x) curAct = 1;
-                else
-                    follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x);
-                break;
-            case 1:
-                follower.setPose(startPose);
-                claw.closeClaw();
 
-                follower.followPath(path1);
-        }*/
         if(upper.getHeight() < 15 && !upper.isUp()) upper.off();
         if(lower.getPosition() > -50 && !lower.out()) lower.bottomon();
         if(!gamepad1.dpad_left) { //Drive Enhancments
@@ -234,10 +227,50 @@ public class TeleOpEnhancements extends OpMode {
             if(gamepad1.x && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.1) curAct = 6;
             if (gamepad1.a) curAct = 5;
         }
-        if (gamepad1.dpad_down) {
+        /*if (gamepad1.y) {
             curAct = 11;
+        }*/
+        if(gamepad1.dpad_down) {
+            lower.raise();
         }
 
+        if(gamepad1.dpad_up) {
+            lower.lower();
+        }
+
+        if (gamepad1.dpad_right && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.35) {
+            if (lower.closed()) lower.release();
+            else lower.grab();
+            actionTimer = opmodeTimer.getElapsedTimeSeconds();
+        }
+
+        if (gamepad1.left_trigger > .2 && lower.getPosition() > -1800) {
+            lower.extend();
+        } else if (gamepad1.right_trigger > .2 ) {
+            lower.retract();
+        } else if (gamepad1.left_bumper && lower.getPosition() > -1800) {
+            lower.slowExtend();
+        } else if (gamepad1.right_bumper) {
+            lower.slowRetract();
+        } else if (lower.getPosition() < -50) {
+            lower.bottomoff();
+        }
+
+        if(gamepad1.back){
+            curAct = 0;
+            follower.breakFollowing();
+            follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
+        }
+        /*
+        if (feedforward) {
+            if (upper.getHeight() > 600) {
+                upper.smallDown();
+            } else if (upper.getHeight() > 540) {
+                upper.stayUp();
+            } else if (upper.getHeight() <= 540) {
+                upper.goUp();
+            }
+        }*/
 
         follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
         telePathUpdate();
@@ -245,6 +278,7 @@ public class TeleOpEnhancements extends OpMode {
 
         telemetry.addData("curAct", curAct);
         telemetry.addData("Height", upper.getHeight());
+        telemetry.addData("Feedforward", feedforward);
 
     }
 

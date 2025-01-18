@@ -36,8 +36,8 @@ public class UpperSubsystem {
         upper.setPower(RobotConstants.upperDownPower);
         up = false;
     }
-    public void floorDown(){
-        upper.setPower(-0.2);
+    public void smallDown(){
+        upper.setPower(-0.05);
     }
 
     public void off(){
@@ -52,5 +52,7 @@ public class UpperSubsystem {
     public void resetEncoder(){
         upper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
+
+
 }
 
