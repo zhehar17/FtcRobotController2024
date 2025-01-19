@@ -114,34 +114,34 @@ public class ThreeAuto extends OpMode {
                         new BezierCurve(
                                 new Point(22.000, 16.000, Point.CARTESIAN),
                                 new Point(58.000, 33.000, Point.CARTESIAN),
-                                new Point(58.000, 16.000, Point.CARTESIAN)
+                                new Point(58.000, 18.000, Point.CARTESIAN)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(200), Math.toRadians(180))
+                .setLinearHeadingInterpolation(Math.toRadians(200), Math.toRadians(200))
                 .addPath(
                         // Line 4
                         new BezierLine(
-                                new Point(58.000, 16.000, Point.CARTESIAN),
-                                new Point(20.000, 16.000, Point.CARTESIAN)
+                                new Point(58.000, 18.000, Point.CARTESIAN),
+                                new Point(23.327, 11.664, Point.CARTESIAN)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                .setLinearHeadingInterpolation(Math.toRadians(200), Math.toRadians(200))
                 .addPath(
                         // Line 5
                         new BezierCurve(
-                                new Point(20.000, 16.000, Point.CARTESIAN),
+                                new Point(23.327, 11.664, Point.CARTESIAN),
                                 new Point(30.000, 22.000, Point.CARTESIAN),
                                 new Point(pickupX, pickupY, Point.CARTESIAN)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                .setLinearHeadingInterpolation(Math.toRadians(200), Math.toRadians(180))
                 .build();
         path3 = follower.pathBuilder() //move forward pickup
                 .addPath(
                         // Line 1
                         new BezierLine(
                                 new Point(pickupX, pickupY, Point.CARTESIAN),
-                                new Point(scoreX, 68.000, Point.CARTESIAN)
+                                new Point(scoreX+1, 68.000, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(0))
@@ -150,7 +150,7 @@ public class ThreeAuto extends OpMode {
                 .addPath(
                         // Line 1
                         new BezierLine(
-                                new Point(scoreX, 68.000, Point.CARTESIAN),
+                                new Point(scoreX+1, 68.000, Point.CARTESIAN),
                                 new Point(pickupX, pickupY, Point.CARTESIAN)
                         )
                 )
@@ -161,7 +161,7 @@ public class ThreeAuto extends OpMode {
                         // Line 1
                         new BezierLine(
                                 new Point(pickupX, pickupY, Point.CARTESIAN),
-                                new Point(scoreX, 70.000, Point.CARTESIAN)
+                                new Point(scoreX+2, 70.000, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(0))
@@ -170,7 +170,7 @@ public class ThreeAuto extends OpMode {
                 .addPath(
                         // Line 1
                         new BezierLine(
-                                new Point(scoreX, 70.000, Point.CARTESIAN),
+                                new Point(scoreX+2, 70.000, Point.CARTESIAN),
                                 new Point(pickupX, pickupY, Point.CARTESIAN)
                         )
                 )
@@ -181,7 +181,7 @@ public class ThreeAuto extends OpMode {
                         // Line 1
                         new BezierLine(
                                 new Point(pickupX, pickupY, Point.CARTESIAN),
-                                new Point(scoreX, 72.000, Point.CARTESIAN)
+                                new Point(scoreX+3, 72.000, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(0))
@@ -190,7 +190,7 @@ public class ThreeAuto extends OpMode {
                 .addPath(
                         // Line 1
                         new BezierLine(
-                                new Point(scoreX, 72.000, Point.CARTESIAN),
+                                new Point(scoreX+3 , 72.000, Point.CARTESIAN),
                                 new Point(pickupX, pickupY, Point.CARTESIAN)
                         )
                 )
@@ -203,7 +203,7 @@ public class ThreeAuto extends OpMode {
     /** This switch is called continuously and runs the pathing, at certain points, it triggers the action state.
      * Everytime the switch changes case, it will reset the timer. (This is because of the setPathState() method)
      * The followPath() function sets the follower to run the specific path, but does NOT wait for it to finish before moving on. */
-    public int[] caseOrder = {0,1,2,3,4,5,6,-1};
+    public int[] caseOrder = {0,1,2,3,4,5,6,7,8,9,-1};
     public int curCase = 0;
     public boolean timerStep = false;
     //public boolean localized = false;
@@ -254,7 +254,7 @@ public class ThreeAuto extends OpMode {
                 }
                 break;
             case 4: //score to pickup
-                if(follower.getPose().getX() > (36.5)) {
+                if(follower.getPose().getX() > (37.5)) {
                     if(upper.getHeight() > RobotConstants.barHeight) {
                         upper.scoreDown();
                     }
@@ -295,7 +295,7 @@ public class ThreeAuto extends OpMode {
                 }
                 break;
             case 6:
-                if(follower.getPose().getX() > (36.5)) {
+                if(follower.getPose().getX() > (38.5)) {
                     if(upper.getHeight() > RobotConstants.barHeight) {
                         upper.scoreDown();
                     }
@@ -305,7 +305,7 @@ public class ThreeAuto extends OpMode {
                             //stepTimes[curStep++] = opmodeTimer.getElapsedTimeSeconds();
                             timerStep = true;
                             //localized = false;
-                            follower.followPath(path4, true);
+                            follower.followPath(path6, true);
                         }
                     }
                     if(upper.getHeight() < 15) scored = true;
@@ -320,12 +320,47 @@ public class ThreeAuto extends OpMode {
                     setPathState(caseOrder[curCase++]);
                 }
                 break;
-            case 7:
-                follower.followPath(path6);
+            case 7: //score to pickup
+                if (follower.getPose().getX() < 10) {
+                    claw.closeClaw();
+                    if (!timerStarted) {
+                        timerStarted = true;
+                        timer = pathTimer.getElapsedTimeSeconds();
+                    }
+                }
+                if(claw.isClosed() && (pathTimer.getElapsedTimeSeconds() - timer > 0.35)) {
+                    upper.goUp();
+                    //stepTimes[curStep++] = opmodeTimer.getElapsedTimeSeconds();
+                    follower.followPath(path7, true);
+                    setPathState(caseOrder[curCase++]);
+                }
+                break;
             case 8:
-                follower.followPath(path7);
-            case 9:
-                follower.followPath(path8);
+                if(follower.getPose().getX() > (39.5)) {
+                    if(upper.getHeight() > RobotConstants.barHeight) {
+                        upper.scoreDown();
+                    }
+                    else {
+                        claw.openClaw();
+                        if(!timerStep) {
+                            //stepTimes[curStep++] = opmodeTimer.getElapsedTimeSeconds();
+                            timerStep = true;
+                            //localized = false;
+                            follower.followPath(path8, true);
+                        }
+                    }
+                    if(upper.getHeight() < 15) scored = true;
+                } else if(upper.getHeight() > 540){
+                    upper.stayUp();
+                }
+                if (scored) {
+                    upper.off();
+                    scored = false;
+                    timerStep = false;
+                    timerStarted = false;
+                    setPathState(caseOrder[curCase++]);
+                }
+                break;
         }
     }
 
