@@ -19,8 +19,8 @@ import org.firstinspires.ftc.teamcode.subsystems.UpperSubsystem;
 
 import java.util.Arrays;
 
-@Autonomous(name = "ThreeAuto", group = "Autonomous")
-public class ThreeAuto extends OpMode {
+@Autonomous(name = "FourAuto", group = "Autonomous")
+public class FourAuto extends OpMode {
 
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
@@ -148,18 +148,10 @@ public class ThreeAuto extends OpMode {
                         // Line 1
                         new BezierLine(
                                 new Point(pickupX, pickupY, Point.CARTESIAN),
-                                new Point(34, 68.000, Point.CARTESIAN)
-                        )
-                )
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(0))
-                .addPath(
-                        // Line 2
-                        new BezierLine(
-                                new Point(34.000, 68.000, Point.CARTESIAN),
                                 new Point(scoreX+1, 68.000, Point.CARTESIAN)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(0))
                 .build();
         path4 = follower.pathBuilder() //pickup to score
                 .addPath(
@@ -176,18 +168,10 @@ public class ThreeAuto extends OpMode {
                         // Line 1
                         new BezierLine(
                                 new Point(pickupX, pickupY, Point.CARTESIAN),
-                                new Point(34, 70.000, Point.CARTESIAN)
+                                new Point(scoreX+2, 70.000, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(0))
-                .addPath(
-                        // Line 2
-                        new BezierLine(
-                                new Point(34.000, 68.000, Point.CARTESIAN),
-                                new Point(scoreX+2, 68.000, Point.CARTESIAN)
-                        )
-                )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build();
         path6 = follower.pathBuilder() //pickup to score
                 .addPath(
@@ -204,18 +188,10 @@ public class ThreeAuto extends OpMode {
                         // Line 1
                         new BezierLine(
                                 new Point(pickupX, pickupY, Point.CARTESIAN),
-                                new Point(34, 72.000, Point.CARTESIAN)
+                                new Point(scoreX+3, 72.000, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(0))
-                .addPath(
-                        // Line 2
-                        new BezierLine(
-                                new Point(34.000, 68.000, Point.CARTESIAN),
-                                new Point(scoreX+3, 68.000, Point.CARTESIAN)
-                        )
-                )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build();
         path8 = follower.pathBuilder() //pickup to score
                 .addPath(

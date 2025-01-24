@@ -58,7 +58,7 @@ public class TeleOpEnhancements extends OpMode {
                         // Line 1
                         new BezierCurve(
                                 new Point(10.875, 28.935, Point.CARTESIAN),
-                                new Point(42.631, 73.500, Point.CARTESIAN)
+                                new Point(40.631, 73.500, Point.CARTESIAN)
                                 //new Point(41.495, 22.879, Point.CARTESIAN),
                                 //new Point(8.299, 75.589, Point.CARTESIAN),
                         )
@@ -69,7 +69,7 @@ public class TeleOpEnhancements extends OpMode {
                 .addPath(
                         // Line 1
                         new BezierCurve(
-                                new Point(42.631, 73.500, Point.CARTESIAN),
+                                new Point(40.631, 73.500, Point.CARTESIAN),
                                 new Point(10.875, 28.935, Point.CARTESIAN)
 
                                 //new Point(41.495, 22.879, Point.CARTESIAN),
@@ -203,6 +203,16 @@ public class TeleOpEnhancements extends OpMode {
                     curAct = 0;
                 }
                 break;
+            case 11:
+                upper.goUp();
+                curAct = 12;
+                break;
+            case 12:
+                if(upper.getHeight() > 540){
+                    upper.stayUp();
+                    curAct = 0;
+                }
+                break;
             /*case 11:
                 lower.extend();
                 if(lower.getPosition() < -1800){
@@ -225,6 +235,7 @@ public class TeleOpEnhancements extends OpMode {
             if(gamepad1.a && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.1) curAct = 8;
         } else {
             if(gamepad1.x && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.1) curAct = 6;
+            if(gamepad1.b && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.1) curAct = 11;
             if (gamepad1.a) curAct = 5;
         }
         /*if (gamepad1.y) {
@@ -244,22 +255,22 @@ public class TeleOpEnhancements extends OpMode {
             actionTimer = opmodeTimer.getElapsedTimeSeconds();
         }
 
-        if (gamepad1.left_trigger > .2 && lower.getPosition() > -1800) {
+        if (gamepad1.left_trigger > .4 && lower.getPosition() > -1800) {
             lower.extend();
-        } else if (gamepad1.right_trigger > .2 ) {
+        } else if (gamepad1.right_trigger > .4 ) {
             lower.retract();
-        } else if (gamepad1.left_bumper && lower.getPosition() > -1800) {
+        } /*else if (gamepad1.left_bumper && lower.getPosition() > -1800) {
             lower.slowExtend();
         } else if (gamepad1.right_bumper) {
             lower.slowRetract();
-        } else if (lower.getPosition() < -50) {
+        } */else if (lower.getPosition() < -50) {
             lower.bottomoff();
         }
 
         if(gamepad1.back){
             curAct = 0;
             follower.breakFollowing();
-            follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
+            follower.startTeleopDrive();
         }
         /*
         if (feedforward) {
@@ -272,7 +283,7 @@ public class TeleOpEnhancements extends OpMode {
             }
         }*/
 
-        follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
+        follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
         telePathUpdate();
         follower.update();
 

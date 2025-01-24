@@ -8,6 +8,7 @@ public class LowerSubsystem {
     private DcMotor lower;
     private Servo grabber;
     private Servo wrist;
+    // private Servo pivot;
     private boolean out;
 
     public LowerSubsystem(HardwareMap hardwareMap) {
@@ -19,6 +20,7 @@ public class LowerSubsystem {
 
         grabber = hardwareMap.get(Servo.class, "grabber");
         wrist = hardwareMap.get(Servo.class, "wrist");
+        //pivot = hardwareMap.get(Servo.class, "pivot");
 
         out = false;
     }
@@ -30,7 +32,7 @@ public class LowerSubsystem {
         lower.setPower(0);
     }
     public void bottomon(){
-        lower.setPower(0.01);
+        lower.setPower(0.05);
     }
 
     public double getPosition(){
@@ -76,4 +78,5 @@ public class LowerSubsystem {
     public boolean closed() {
         return grabber.getPosition() == 1;
     }
+
 }
