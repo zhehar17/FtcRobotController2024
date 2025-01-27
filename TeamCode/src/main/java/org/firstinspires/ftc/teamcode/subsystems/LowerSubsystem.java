@@ -8,8 +8,9 @@ public class LowerSubsystem {
     private DcMotor lower;
     private Servo grabber;
     private Servo wrist;
-    // private Servo pivot;
+    private Servo pivot;
     private boolean out;
+    private double wristPos;
 
     public LowerSubsystem(HardwareMap hardwareMap) {
         lower = hardwareMap.get(DcMotor.class, "lower");
@@ -20,11 +21,15 @@ public class LowerSubsystem {
 
         grabber = hardwareMap.get(Servo.class, "grabber");
         wrist = hardwareMap.get(Servo.class, "wrist");
-        //pivot = hardwareMap.get(Servo.class, "pivot");
+        pivot = hardwareMap.get(Servo.class, "pivot");
 
         out = false;
+        wristPos = 1;
     }
 
+    public void setPivot(double pos){
+        pivot.setPosition(pos);
+    }
     public boolean out(){
         return out;
     }
@@ -60,15 +65,18 @@ public class LowerSubsystem {
     }
 
     //Wrist
-    public void lower(){
+    public void wristUp(){
         wrist.setPosition(1);
     }
+    public void lower(){
+        wrist.setPosition(0.5);
+    }
     public void raise(){
-        wrist.setPosition(0.3);
+        wrist.setPosition(0);
     }
 
     public void grab() {
-        grabber.setPosition(1);
+        grabber.setPosition(0.5);
     }
 
     public void release() {
@@ -76,7 +84,7 @@ public class LowerSubsystem {
     }
 
     public boolean closed() {
-        return grabber.getPosition() == 1;
+        return grabber.getPosition() == 0.5;
     }
 
 }

@@ -83,6 +83,7 @@ public class TeleOpEnhancements extends OpMode {
      * This initializes the drive motors as well as the Follower and motion Vectors.
      */
     public int curAct;
+    public double pivotDouble;
 
     @Override
     public void init() {
@@ -106,6 +107,7 @@ public class TeleOpEnhancements extends OpMode {
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         curAct = 0;
+        pivotDouble = 0.5;
         follower.startTeleopDrive();
 
         opmodeTimer = new Timer();
@@ -248,6 +250,9 @@ public class TeleOpEnhancements extends OpMode {
         if(gamepad1.dpad_up) {
             lower.lower();
         }
+        if(gamepad1.left_stick_button){
+            lower.wristUp();
+        }
 
         if (gamepad1.dpad_right && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.35) {
             if (lower.closed()) lower.release();
@@ -272,6 +277,15 @@ public class TeleOpEnhancements extends OpMode {
             follower.breakFollowing();
             follower.startTeleopDrive();
         }
+
+        if(gamepad1.left_bumper){
+            pivotDouble += 0.02;
+        } else if(gamepad1.right_bumper){
+            pivotDouble -= 0.02;
+        }
+        if(pivotDouble < 0)pivotDouble = 0;
+        if(pivotDouble > 1)pivotDouble = 1;
+        lower.setPivot(pivotDouble);
         /*
         if (feedforward) {
             if (upper.getHeight() > 600) {

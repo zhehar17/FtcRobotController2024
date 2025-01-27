@@ -19,8 +19,8 @@ import org.firstinspires.ftc.teamcode.subsystems.UpperSubsystem;
 
 import java.util.Arrays;
 
-@Autonomous(name = "FiveAuto", group = "Autonomous")
-public class FiveAuto extends OpMode {
+@Autonomous(name = "FastFiveAuto", group = "Autonomous")
+public class FastFiveAuto extends OpMode {
 
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
@@ -50,7 +50,7 @@ public class FiveAuto extends OpMode {
     /** Scoring Pose of our robot. It is facing the submersible at a -45 degree (315 degree) angle. */
     //private final Pose scorePose = new Pose(14, 129, Math.toRadians(315));
 
-     /** Lowest (First) Sample from the Spike Mark */
+    /** Lowest (First) Sample from the Spike Mark */
     //private final Pose pickup1Pose = new Pose(37, 121, Math.toRadians(0));
 
     /** Middle (Second) Sample from the Spike Mark */
@@ -165,24 +165,16 @@ public class FiveAuto extends OpMode {
                         // Line 1
                         new BezierLine(
                                 new Point(pickupX, pickupY, Point.CARTESIAN),
-                                new Point(34, 68.000, Point.CARTESIAN)
+                                new Point(scoreX+1, 68.000, Point.CARTESIAN)//+1
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(0))
-                .addPath(
-                        // Line 2
-                        new BezierLine(
-                                new Point(34.000, 68.000, Point.CARTESIAN),
-                                new Point(scoreX+0.5, 68.000, Point.CARTESIAN)
-                        )
-                )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build();
         path4 = follower.pathBuilder() //pickup to score
                 .addPath(
                         // Line 1
                         new BezierLine(
-                                new Point(scoreX+0.5, 68.000, Point.CARTESIAN),
+                                new Point(scoreX+1, 68.000, Point.CARTESIAN),
                                 new Point(pickupX, pickupY, Point.CARTESIAN)
                         )
                 )
@@ -193,18 +185,10 @@ public class FiveAuto extends OpMode {
                         // Line 1
                         new BezierLine(
                                 new Point(pickupX, pickupY, Point.CARTESIAN),
-                                new Point(34, 70.000, Point.CARTESIAN)
-                        )
-                )
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(0))
-                .addPath(
-                        // Line 2
-                        new BezierLine(
-                                new Point(34.000, 68.000, Point.CARTESIAN),
                                 new Point(scoreX+1, 68.000, Point.CARTESIAN)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(0))
                 .build();
         path6 = follower.pathBuilder() //pickup to score
                 .addPath(
@@ -221,26 +205,18 @@ public class FiveAuto extends OpMode {
                         // Line 1
                         new BezierLine(
                                 new Point(pickupX, pickupY, Point.CARTESIAN),
-                                new Point(34, 72.000, Point.CARTESIAN)
+                                new Point(scoreX+2, 68.000, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(0))
-                .addPath(
-                        // Line 2
-                        new BezierLine(
-                                new Point(34.000, 68.000, Point.CARTESIAN),
-                                new Point(scoreX+1.5, 68.000, Point.CARTESIAN)
-                        )
-                )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build();
         /*
-        */
+         */
         path8 = follower.pathBuilder() //pickup to score
                 .addPath(
                         // Line 1
                         new BezierLine(
-                                new Point(scoreX+1.5, 70.000, Point.CARTESIAN),
+                                new Point(scoreX+2, 70.000, Point.CARTESIAN),
                                 new Point(pickupX, pickupY, Point.CARTESIAN)
                         )
                 )
@@ -251,24 +227,16 @@ public class FiveAuto extends OpMode {
                         // Line 1
                         new BezierLine(
                                 new Point(pickupX, pickupY, Point.CARTESIAN),
-                                new Point(34, 72.000, Point.CARTESIAN)
-                        )
-                )
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(0))
-                .addPath(
-                        // Line 2
-                        new BezierLine(
-                                new Point(34.000, 68.000, Point.CARTESIAN),
                                 new Point(scoreX+2, 68.000, Point.CARTESIAN)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(0))
                 .build();
         path10 = follower.pathBuilder() //pickup to score
                 .addPath(
                         // Line 1
                         new BezierLine(
-                                new Point(scoreX+2 , 72.000, Point.CARTESIAN),
+                                new Point(scoreX+2, 72.000, Point.CARTESIAN),
                                 new Point(pickupX, pickupY, Point.CARTESIAN)
                         )
                 )
@@ -300,7 +268,7 @@ public class FiveAuto extends OpMode {
                 break;
             case 2://score then move
                 if(follower.getPose().getX() > (36.5)) {
-                    if(upper.getHeight() > RobotConstants.barHeight) {
+                    if(upper.getHeight() > RobotConstants.barHeight + 15) {
                         upper.scoreDown();
                     }
                     else {
@@ -332,7 +300,7 @@ public class FiveAuto extends OpMode {
                 }
                 break;
             case 4: //score to pickup
-                if(follower.getPose().getX() > (37)) {
+                if(follower.getPose().getX() >= (38)) {
                     if(upper.getHeight() > RobotConstants.barHeight) {
                         upper.scoreDown();
                         scored = true;
@@ -373,7 +341,7 @@ public class FiveAuto extends OpMode {
                 }
                 break;
             case 6:
-                if(follower.getPose().getX() > (37.5)) {
+                if(follower.getPose().getX() > (38.5)) {
                     if(upper.getHeight() > RobotConstants.barHeight) {
                         upper.scoreDown();
                         scored = true;
@@ -441,7 +409,7 @@ public class FiveAuto extends OpMode {
                 }
                 break;*/
             case 8:
-                if(follower.getPose().getX() > (38)) {
+                if(follower.getPose().getX() > (38.5)) {
                     if(upper.getHeight() > RobotConstants.barHeight) {
                         upper.scoreDown();
                         scored = true;
@@ -482,7 +450,7 @@ public class FiveAuto extends OpMode {
                 }
                 break;
             case 10:
-                if(follower.getPose().getX() > (38.5)) {
+                if(follower.getPose().getX() > (40.5)) {
                     if(upper.getHeight() > RobotConstants.barHeight) {
                         upper.scoreDown();
                         scored = true;
