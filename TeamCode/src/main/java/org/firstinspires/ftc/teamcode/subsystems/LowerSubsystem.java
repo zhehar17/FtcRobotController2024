@@ -37,7 +37,7 @@ public class LowerSubsystem {
         lower.setPower(0);
     }
     public void bottomon(){
-        lower.setPower(0.05);
+        lower.setPower(-0.05);
     }
 
     public double getPosition(){
@@ -76,15 +76,15 @@ public class LowerSubsystem {
     }
 
     public void grab() {
-        grabber.setPosition(0.5);
+        grabber.setPosition(0.25);
     }
 
     public void release() {
-        grabber.setPosition(0);
+        grabber.setPosition(0.62);
     }
 
     public boolean closed() {
-        return grabber.getPosition() == 0.5;
+        return grabber.getPosition() == 0.25;
     }
 
 }
