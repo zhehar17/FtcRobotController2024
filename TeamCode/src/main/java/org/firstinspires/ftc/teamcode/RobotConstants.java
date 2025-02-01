@@ -10,7 +10,7 @@ public class RobotConstants {
     public static double upperDownPower = -0.7;
     public static double upperUpHoldPower = 0.1;
 
-    public static double barHeight = 500;
+    public static double barHeight = 500-50;
 
     public static double distBetweenSensors = 5;
     public static double sensorToCenter = 7.8125;

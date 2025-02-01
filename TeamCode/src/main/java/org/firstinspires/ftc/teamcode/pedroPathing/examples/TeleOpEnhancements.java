@@ -38,7 +38,7 @@ import org.firstinspires.ftc.teamcode.subsystems.UpperSubsystem;
  */
 @TeleOp(name = "Pedro Pathing TeleOp Enhancements", group = "Test")
 public class TeleOpEnhancements extends OpMode {
-    private final Pose startPose = new Pose(10.875, 28.935, Math.toRadians(180));
+    private final Pose startPose = new Pose(10.875, 28.935, Math.toRadians(0));
     private final Pose scorePose = new Pose(42.631, 73.500, Math.toRadians(0));
     private Follower follower;
     public UpperSubsystem upper;
@@ -140,7 +140,7 @@ public class TeleOpEnhancements extends OpMode {
                 curAct = 2;
                 break;
             case 2:
-                if(opmodeTimer.getElapsedTimeSeconds() - timer > 0.35) { //0.35
+                if(claw.isClosed() && opmodeTimer.getElapsedTimeSeconds() - timer > 0.35) { //0.35
                     upper.goUp();
                     //stepTimes[curStep++] = opmodeTimer.getElapsedTimeSeconds();
                     follower.followPath(path1);
@@ -232,7 +232,7 @@ public class TeleOpEnhancements extends OpMode {
 
         if(upper.getHeight() < 15 && !upper.isUp()) upper.off();
         if(lower.getPosition() > -50 && !lower.out()) lower.bottomon();
-        if(!gamepad1.dpad_left) { //Drive Enhancments
+        if(gamepad1.dpad_left) { //Drive Enhancments
             if(gamepad1.x && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.1) curAct = 1;
             if(gamepad1.a && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.1) curAct = 8;
         } else {
@@ -254,7 +254,7 @@ public class TeleOpEnhancements extends OpMode {
             lower.wristUp();
         }
 
-        if (gamepad1.dpad_right && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.35) {
+        if (gamepad1.right_stick_button && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.35) {
             if (lower.closed()) lower.release();
             else lower.grab();
             actionTimer = opmodeTimer.getElapsedTimeSeconds();
@@ -268,7 +268,7 @@ public class TeleOpEnhancements extends OpMode {
             lower.slowExtend();
         } else if (gamepad1.right_bumper) {
             lower.slowRetract();
-        } */else if (lower.getPosition() < -50) {
+        } */else {
             lower.bottomoff();
         }
 

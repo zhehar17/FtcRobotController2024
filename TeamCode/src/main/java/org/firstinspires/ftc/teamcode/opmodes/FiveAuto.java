@@ -131,14 +131,22 @@ public class FiveAuto extends OpMode {
                         new BezierCurve(
                                 new Point(30.000, 16.000, Point.CARTESIAN),
                                 new Point(58.000, 23.551, Point.CARTESIAN),
-                                new Point(59.000, 6.00, Point.CARTESIAN)
+                                new Point(58.000, 6.0, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                 .addPath(
                         // Line 6
                         new BezierLine(
-                                new Point(59.000, 6.000, Point.CARTESIAN),
+                                new Point(58.000, 6.00, Point.CARTESIAN),
+                                new Point(60.000, 6.0, Point.CARTESIAN)
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                .addPath(
+                        // Line 6
+                        new BezierLine(
+                                new Point(60.000, 6.00, Point.CARTESIAN),
                                 new Point(30.000, 6.0, Point.CARTESIAN)
                         )
                 )
@@ -146,7 +154,7 @@ public class FiveAuto extends OpMode {
                 .addPath(
                         // Line 7
                         new BezierLine(
-                                new Point(30.000, 6.000, Point.CARTESIAN),
+                                new Point(30.000, 6.00, Point.CARTESIAN),
                                 new Point(22.000, 20.000, Point.CARTESIAN)
                         )
                 )
@@ -200,7 +208,7 @@ public class FiveAuto extends OpMode {
                 .addPath(
                         // Line 2
                         new BezierLine(
-                                new Point(34.000, 68.000, Point.CARTESIAN),
+                                new Point(34.000, 70.000, Point.CARTESIAN),
                                 new Point(scoreX+1, 68.000, Point.CARTESIAN)
                         )
                 )
@@ -228,7 +236,7 @@ public class FiveAuto extends OpMode {
                 .addPath(
                         // Line 2
                         new BezierLine(
-                                new Point(34.000, 68.000, Point.CARTESIAN),
+                                new Point(34.000, 72.000, Point.CARTESIAN),
                                 new Point(scoreX+1.5, 68.000, Point.CARTESIAN)
                         )
                 )
@@ -258,7 +266,7 @@ public class FiveAuto extends OpMode {
                 .addPath(
                         // Line 2
                         new BezierLine(
-                                new Point(34.000, 68.000, Point.CARTESIAN),
+                                new Point(34.000, 72.000, Point.CARTESIAN),
                                 new Point(scoreX+2, 68.000, Point.CARTESIAN)
                         )
                 )
@@ -293,13 +301,13 @@ public class FiveAuto extends OpMode {
                 setPathState(1);
                 break;
             case 1://hold up
-                if(upper.getHeight() > 540){
+                if(upper.getHeight() > 540-55){
                     upper.stayUp();
                     setPathState(2);
                 }
                 break;
             case 2://score then move
-                if(follower.getPose().getX() > (36.5)) {
+                if(follower.getPose().getX() > (36.8)) {
                     if(upper.getHeight() > RobotConstants.barHeight) {
                         upper.scoreDown();
                     }
@@ -317,7 +325,7 @@ public class FiveAuto extends OpMode {
                 }
                 break;
             case 3: //pickup and score
-                if (follower.getPose().getX() < 10.25 || !follower.isBusy()) {
+                if (follower.getPose().getX() < 10.1 || !follower.isBusy()) {
                     claw.closeClaw();
                     if (!timerStarted) {
                         timerStarted = true;
@@ -346,7 +354,7 @@ public class FiveAuto extends OpMode {
                             follower.followPath(path4, true);
                         }
                     }
-                } else if(upper.getHeight() > 540){
+                } else if(upper.getHeight() > 540-55){
                     upper.stayUp();
                 }
                 if(scored && upper.getHeight() < 15) {
@@ -387,7 +395,7 @@ public class FiveAuto extends OpMode {
                             follower.followPath(path6, true);
                         }
                     }
-                } else if(upper.getHeight() > 540){
+                } else if(upper.getHeight() > 540-55){
                     upper.stayUp();
                 }
                 if(scored && upper.getHeight() < 15) {
@@ -455,7 +463,7 @@ public class FiveAuto extends OpMode {
                             follower.followPath(path8, true);
                         }
                     }
-                } else if(upper.getHeight() > 540){
+                } else if(upper.getHeight() > 540-55){
                     upper.stayUp();
                 }
                 if(scored && upper.getHeight() < 15) {
@@ -478,11 +486,11 @@ public class FiveAuto extends OpMode {
                     upper.goUp();
                     //stepTimes[curStep++] = opmodeTimer.getElapsedTimeSeconds();
                     follower.followPath(path9, true);
-                    setPathState(-1);
+                    setPathState(10);
                 }
                 break;
             case 10:
-                if(follower.getPose().getX() > (38.5)) {
+                if(follower.getPose().getX() > (38.5)) {//38.5
                     if(upper.getHeight() > RobotConstants.barHeight) {
                         upper.scoreDown();
                         scored = true;
@@ -496,7 +504,7 @@ public class FiveAuto extends OpMode {
                             follower.followPath(path10, true);
                         }
                     }
-                } else if(upper.getHeight() > 540){
+                } else if(upper.getHeight() > 540-55){
                     upper.stayUp();
                 }
                 if(scored && upper.getHeight() < 15) {
@@ -561,6 +569,7 @@ public class FiveAuto extends OpMode {
         lower = new LowerSubsystem(hardwareMap);
 
         lower.bottomon();
+        lower.wristUp();
         claw.closeClaw();
 
     }

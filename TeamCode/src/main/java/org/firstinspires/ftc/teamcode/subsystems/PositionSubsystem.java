@@ -14,7 +14,8 @@ import java.lang.Math;
 
 public class PositionSubsystem {
     private Limelight3A limelight;
-    private LLResult result;
+
+    public LLResult result;
 
 
     public PositionSubsystem(HardwareMap hardwareMap) {
@@ -24,6 +25,11 @@ public class PositionSubsystem {
         /*
          * Starts polling for data.
          */
+        limelight.setPollRateHz(100);
+        //limelight.start();
+    }
+
+    public void start(){
         limelight.start();
     }
 
@@ -33,6 +39,7 @@ public class PositionSubsystem {
     }
 
     public long staleResult(){
+        result = limelight.getLatestResult();
         return result.getStaleness();
     }
 
@@ -62,4 +69,17 @@ public class PositionSubsystem {
         return result.getBotpose().getOrientation().getYaw() + 90;
     }
 
+    public double getPieceAngle(int i){
+        result = limelight.getLatestResult();
+        double[] pythonOutputs = result.getPythonOutput();
+        if (pythonOutputs != null && pythonOutputs.length > 0) {
+            double firstOutput = pythonOutputs[i];
+            return firstOutput;
+        }
+        return 0;
+    }
+
+    public boolean isRunning(){
+        return limelight.isRunning();
+    }
 }

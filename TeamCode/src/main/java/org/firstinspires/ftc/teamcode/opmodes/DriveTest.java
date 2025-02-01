@@ -294,11 +294,12 @@ public class DriveTest extends LinearOpMode {
 
             telemetry.addData("upperPosition", upper.getCurrentPosition());
             telemetry.addData("lowerPosition", lower.getCurrentPosition());
+            /*
             if(pos.validResult()) {
                 telemetry.addData("X: ", pos.getX());
                 telemetry.addData("Y: ", pos.getY());
                 telemetry.addData("Heading: ", pos.getYaw());
-            }
+            }*/
             telemetry.update();
         }
     }
