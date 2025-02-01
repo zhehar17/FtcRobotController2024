@@ -69,22 +69,22 @@ public class LowerSubsystem {
         wrist.setPosition(1);
     }
     public void lower(){
-        wrist.setPosition(0.5);
+        wrist.setPosition(0);
     }
     public void raise(){
-        wrist.setPosition(0);
+        wrist.setPosition(0.5);
     }
 
     public void grab() {
-        grabber.setPosition(0.25);
-    }
-
-    public void release() {
         grabber.setPosition(0.62);
     }
 
+    public void release() {
+        grabber.setPosition(0.25);
+    }
+
     public boolean closed() {
-        return grabber.getPosition() == 0.25;
+        return grabber.getPosition() == 0.62;
     }
 
 }

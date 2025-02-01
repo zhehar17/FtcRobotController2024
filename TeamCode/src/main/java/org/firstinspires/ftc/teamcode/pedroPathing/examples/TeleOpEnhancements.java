@@ -215,6 +215,25 @@ public class TeleOpEnhancements extends OpMode {
                     curAct = 0;
                 }
                 break;
+            case 13: //Close lower claw
+                if (lower.closed()) lower.release();
+                else {
+                    lower.grab();
+                }
+                timer = opmodeTimer.getElapsedTimeSeconds();
+                actionTimer = opmodeTimer.getElapsedTimeSeconds();
+                follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x);
+                curAct = 14;
+                break;
+            case 14:
+                if(opmodeTimer.getElapsedTimeSeconds() - timer > 0.2) {
+                    curAct = 0;
+                    if (lower.closed()) {
+                        lower.raise();
+                    }
+                }
+                follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x);
+                break;
             /*case 11:
                 lower.extend();
                 if(lower.getPosition() < -1800){
@@ -243,6 +262,7 @@ public class TeleOpEnhancements extends OpMode {
         /*if (gamepad1.y) {
             curAct = 11;
         }*/
+
         if(gamepad1.dpad_down) {
             lower.raise();
         }
@@ -250,14 +270,12 @@ public class TeleOpEnhancements extends OpMode {
         if(gamepad1.dpad_up) {
             lower.lower();
         }
-        if(gamepad1.left_stick_button){
+        if(gamepad1.y){
             lower.wristUp();
         }
 
-        if (gamepad1.right_stick_button && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.35) {
-            if (lower.closed()) lower.release();
-            else lower.grab();
-            actionTimer = opmodeTimer.getElapsedTimeSeconds();
+        if (gamepad1.back && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.1) {
+            curAct = 13;
         }
 
         if (gamepad1.left_trigger > .4 && lower.getPosition() > -1800) {
@@ -272,7 +290,7 @@ public class TeleOpEnhancements extends OpMode {
             lower.bottomoff();
         }
 
-        if(gamepad1.back){
+        if(gamepad1.start){
             curAct = 0;
             follower.breakFollowing();
             follower.startTeleopDrive();
@@ -296,8 +314,11 @@ public class TeleOpEnhancements extends OpMode {
                 upper.goUp();
             }
         }*/
-
-        follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
+        if (gamepad1.left_stick_button) {
+            follower.setTeleOpMovementVectors(-gamepad1.left_stick_y/2, -gamepad1.left_stick_x/2, -gamepad1.right_stick_x/2, false);
+        } else {
+            follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
+        }
         telePathUpdate();
         follower.update();
 
