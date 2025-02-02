@@ -44,13 +44,13 @@ public class LowerSubsystem {
         return lower.getCurrentPosition();
     }
 
-    public void extend(){
-        lower.setPower(-1);
+    public void extend(double power){
+        lower.setPower(-power);
         out = true;
     }
 
-    public void retract(){
-        lower.setPower(1);
+    public void retract(double power){
+        lower.setPower(power);
         out = false;
     }
 
@@ -73,6 +73,10 @@ public class LowerSubsystem {
     }
     public void raise(){
         wrist.setPosition(0.5);
+    }
+
+    public void wristPos(double pos){
+        wrist.setPosition(pos);
     }
 
     public void grab() {

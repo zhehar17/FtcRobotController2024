@@ -131,34 +131,42 @@ public class FiveAuto extends OpMode {
                         new BezierCurve(
                                 new Point(30.000, 16.000, Point.CARTESIAN),
                                 new Point(58.000, 23.551, Point.CARTESIAN),
-                                new Point(58.000, 6.0, Point.CARTESIAN)
+                                new Point(58.000, 6.6, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                 .addPath(
                         // Line 6
                         new BezierLine(
-                                new Point(58.000, 6.00, Point.CARTESIAN),
-                                new Point(60.000, 6.0, Point.CARTESIAN)
+                                new Point(58.000, 6.60, Point.CARTESIAN),
+                                new Point(62.000, 6.5, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                 .addPath(
                         // Line 6
                         new BezierLine(
-                                new Point(60.000, 6.00, Point.CARTESIAN),
+                                new Point(62.000, 6.5, Point.CARTESIAN),
+                                new Point(58.000, 6.4, Point.CARTESIAN)
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(190))
+                .addPath(
+                        // Line 6
+                        new BezierLine(
+                                new Point(58.000, 6.4, Point.CARTESIAN),
                                 new Point(30.000, 6.0, Point.CARTESIAN)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                .setLinearHeadingInterpolation(Math.toRadians(190), Math.toRadians(190))
                 .addPath(
                         // Line 7
                         new BezierLine(
-                                new Point(30.000, 6.00, Point.CARTESIAN),
+                                new Point(30.000, 6.0, Point.CARTESIAN),
                                 new Point(22.000, 20.000, Point.CARTESIAN)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                .setLinearHeadingInterpolation(Math.toRadians(190), Math.toRadians(180))
                 .addPath(
                         // Line 8
                         new BezierLine(
@@ -218,7 +226,7 @@ public class FiveAuto extends OpMode {
                 .addPath(
                         // Line 1
                         new BezierLine(
-                                new Point(scoreX+1, 70.000, Point.CARTESIAN),
+                                new Point(scoreX+1, 68.000, Point.CARTESIAN),
                                 new Point(pickupX, pickupY, Point.CARTESIAN)
                         )
                 )
@@ -229,14 +237,14 @@ public class FiveAuto extends OpMode {
                         // Line 1
                         new BezierLine(
                                 new Point(pickupX, pickupY, Point.CARTESIAN),
-                                new Point(34, 72.000, Point.CARTESIAN)
+                                new Point(34, 70.000, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(0))
                 .addPath(
                         // Line 2
                         new BezierLine(
-                                new Point(34.000, 72.000, Point.CARTESIAN),
+                                new Point(34.000, 70.000, Point.CARTESIAN),
                                 new Point(scoreX+1.5, 68.000, Point.CARTESIAN)
                         )
                 )
@@ -259,14 +267,14 @@ public class FiveAuto extends OpMode {
                         // Line 1
                         new BezierLine(
                                 new Point(pickupX, pickupY, Point.CARTESIAN),
-                                new Point(34, 72.000, Point.CARTESIAN)
+                                new Point(32, 70.000, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(0))
                 .addPath(
                         // Line 2
                         new BezierLine(
-                                new Point(34.000, 72.000, Point.CARTESIAN),
+                                new Point(32.000, 70.000, Point.CARTESIAN),
                                 new Point(scoreX+2, 68.000, Point.CARTESIAN)
                         )
                 )
@@ -449,7 +457,7 @@ public class FiveAuto extends OpMode {
                 }
                 break;*/
             case 8:
-                if(follower.getPose().getX() > (38)) {
+                if(follower.getPose().getX() > (37.5)) {
                     if(upper.getHeight() > RobotConstants.barHeight) {
                         upper.scoreDown();
                         scored = true;
@@ -490,7 +498,7 @@ public class FiveAuto extends OpMode {
                 }
                 break;
             case 10:
-                if(follower.getPose().getX() > (38.5)) {//38.5
+                if(follower.getPose().getX() > (38)) {//38.5
                     if(upper.getHeight() > RobotConstants.barHeight) {
                         upper.scoreDown();
                         scored = true;

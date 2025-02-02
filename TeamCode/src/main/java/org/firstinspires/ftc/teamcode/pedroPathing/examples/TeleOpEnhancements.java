@@ -84,6 +84,7 @@ public class TeleOpEnhancements extends OpMode {
      */
     public int curAct;
     public double pivotDouble;
+    public double lowerGrabPos;
 
     @Override
     public void init() {
@@ -108,6 +109,7 @@ public class TeleOpEnhancements extends OpMode {
 
         curAct = 0;
         pivotDouble = 0.5;
+        lowerGrabPos = 1;
         follower.startTeleopDrive();
 
         opmodeTimer = new Timer();
@@ -120,6 +122,7 @@ public class TeleOpEnhancements extends OpMode {
      */
     private double timer;
     private double actionTimer;
+
 
     private boolean feedforward = false;
 
@@ -223,17 +226,18 @@ public class TeleOpEnhancements extends OpMode {
                 timer = opmodeTimer.getElapsedTimeSeconds();
                 actionTimer = opmodeTimer.getElapsedTimeSeconds();
                 follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x);
-                curAct = 14;
+                curAct = 0;
                 break;
+                /*
             case 14:
                 if(opmodeTimer.getElapsedTimeSeconds() - timer > 0.2) {
                     curAct = 0;
                     if (lower.closed()) {
-                        lower.raise();
+                        //lower.raise();
                     }
                 }
                 follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x);
-                break;
+                break;*/
             /*case 11:
                 lower.extend();
                 if(lower.getPosition() < -1800){
@@ -263,25 +267,34 @@ public class TeleOpEnhancements extends OpMode {
             curAct = 11;
         }*/
 
-        if(gamepad1.dpad_down) {
-            lower.raise();
+        if(gamepad1.dpad_up && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.2) {
+            if(lowerGrabPos < 1) {
+                lowerGrabPos+=0.5;
+                actionTimer = opmodeTimer.getElapsedTimeSeconds();
+            }
         }
 
-        if(gamepad1.dpad_up) {
-            lower.lower();
+        if(gamepad1.dpad_down && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.2) {
+            if(lowerGrabPos > 0){
+                lowerGrabPos-=0.5;
+                actionTimer = opmodeTimer.getElapsedTimeSeconds();
+            }
         }
+        lower.wristPos(lowerGrabPos);
+
+
         if(gamepad1.y){
             lower.wristUp();
         }
 
-        if (gamepad1.back && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.1) {
+        if (gamepad1.right_stick_button && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.35) {
             curAct = 13;
         }
 
-        if (gamepad1.left_trigger > .4 && lower.getPosition() > -1800) {
-            lower.extend();
-        } else if (gamepad1.right_trigger > .4 ) {
-            lower.retract();
+        if (gamepad1.left_trigger > .1 && lower.getPosition() > -1800) {
+            lower.extend(gamepad1.left_trigger);
+        } else if (gamepad1.right_trigger > .1 ) {
+            lower.retract(gamepad1.right_trigger);
         } /*else if (gamepad1.left_bumper && lower.getPosition() > -1800) {
             lower.slowExtend();
         } else if (gamepad1.right_bumper) {
