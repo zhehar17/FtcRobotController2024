@@ -38,8 +38,10 @@ import org.firstinspires.ftc.teamcode.subsystems.UpperSubsystem;
  */
 @TeleOp(name = "Pedro Pathing TeleOp Enhancements", group = "Test")
 public class TeleOpEnhancements extends OpMode {
-    private final Pose startPose = new Pose(10.875, 28.935, Math.toRadians(0));
-    private final Pose scorePose = new Pose(42.631, 73.500, Math.toRadians(0));
+    private final Pose startPose = new Pose(10.875, 28.935, Math.toRadians(180));
+    private final Pose scorePose = new Pose(37.631, 73.500, Math.toRadians(0));
+
+    private final Pose sidePose = new Pose(68.000, 48.000, Math.toRadians(90));
     private Follower follower;
     public UpperSubsystem upper;
     public ClawSubsystem claw;
@@ -50,7 +52,7 @@ public class TeleOpEnhancements extends OpMode {
     private DcMotorEx rightFront;
     private DcMotorEx rightRear;
 
-    private PathChain path1, path2;
+    private PathChain path1, path2, path3, path4, path5;
     private Timer opmodeTimer;
     public void buildPaths() {
         path1 = follower.pathBuilder() //pickup to score
@@ -58,7 +60,7 @@ public class TeleOpEnhancements extends OpMode {
                         // Line 1
                         new BezierCurve(
                                 new Point(10.875, 28.935, Point.CARTESIAN),
-                                new Point(40.631, 73.500, Point.CARTESIAN)
+                                new Point(37.631, 73.500, Point.CARTESIAN)//40
                                 //new Point(41.495, 22.879, Point.CARTESIAN),
                                 //new Point(8.299, 75.589, Point.CARTESIAN),
                         )
@@ -69,7 +71,7 @@ public class TeleOpEnhancements extends OpMode {
                 .addPath(
                         // Line 1
                         new BezierCurve(
-                                new Point(40.631, 73.500, Point.CARTESIAN),
+                                new Point(37.631, 73.500, Point.CARTESIAN),//40
                                 new Point(10.875, 28.935, Point.CARTESIAN)
 
                                 //new Point(41.495, 22.879, Point.CARTESIAN),
@@ -78,6 +80,49 @@ public class TeleOpEnhancements extends OpMode {
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(180))
                 .build();
+        path3 = follower.pathBuilder()
+                .addPath(
+                        // Line 1
+                        new BezierCurve(
+                                new Point(68.000, 48.000, Point.CARTESIAN),
+                                new Point(58.000, 24.000, Point.CARTESIAN),
+                                new Point(16.000, 22.000, Point.CARTESIAN)
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(180))
+                .build();
+
+        path4 = follower.pathBuilder()
+                .addPath(
+                        // Line 2
+                        new BezierCurve(
+                                new Point(16.000, 22.000, Point.CARTESIAN),
+                                new Point(58.000, 24.000, Point.CARTESIAN),
+                                new Point(68.000, 45.000, Point.CARTESIAN)
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(90))
+                .build();
+        path5 = follower.pathBuilder()
+                .addPath(
+                        // Line 1
+                        new BezierLine(
+                                new Point(37.631, 62.000, Point.CARTESIAN),
+                                new Point(22.000, 26.000, Point.CARTESIAN)
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(220))
+                .addPath(
+                        // Line 2
+                        new BezierCurve(
+                                new Point(22.000, 26.000, Point.CARTESIAN),
+                                new Point(45.000, 28.000, Point.CARTESIAN),
+                                new Point(11.000, 28.000, Point.CARTESIAN)
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(220), Math.toRadians(180))
+                .build();
+
     }
     /**
      * This initializes the drive motors as well as the Follower and motion Vectors.
@@ -114,6 +159,7 @@ public class TeleOpEnhancements extends OpMode {
 
         opmodeTimer = new Timer();
         opmodeTimer.resetTimer();
+        claw.openClaw();
     }
 
     /**
@@ -125,6 +171,7 @@ public class TeleOpEnhancements extends OpMode {
 
 
     private boolean feedforward = false;
+    private boolean autoRetract = false;
 
     /* Tele Enhancements
         1-2-3-4 pickup to score
@@ -151,17 +198,21 @@ public class TeleOpEnhancements extends OpMode {
                 }
                 break;
             case 3:
-                if(upper.getHeight() > 540){
+                if(upper.getHeight() > 485){
                     upper.stayUp();
                     feedforward = true;
                     curAct = 4;
                 }
                 break;
             case 4:
-                if(follower.getPose().getX() > (42)) {
+                if(follower.getPose().getX() > (37)) {
+                    /*follower.breakFollowing();
+                    follower.startTeleopDrive();
+                    follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x);
+                    curAct = 0;
+                    feedforward = false;*/
                     follower.startTeleopDrive();
                     curAct = 0;
-                    feedforward = false;
                 }
                 break;
             case 5:
@@ -199,6 +250,7 @@ public class TeleOpEnhancements extends OpMode {
                 }
                 break;
             case 9:
+                follower.setPose(scorePose);
                 follower.followPath(path2);
                 curAct = 10;
                 break;
@@ -213,7 +265,7 @@ public class TeleOpEnhancements extends OpMode {
                 curAct = 12;
                 break;
             case 12:
-                if(upper.getHeight() > 540){
+                if(upper.getHeight() > 485){
                     upper.stayUp();
                     curAct = 0;
                 }
@@ -227,6 +279,47 @@ public class TeleOpEnhancements extends OpMode {
                 actionTimer = opmodeTimer.getElapsedTimeSeconds();
                 follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x);
                 curAct = 0;
+                break;
+            case 14:
+                follower.setPose(sidePose);
+                follower.followPath(path3);
+                curAct = 15;
+                break;
+            case 15:
+                if(follower.getPose().getX() < 40) {
+                    lower.release();
+                    curAct = 16;
+                }
+                break;
+            case 16:
+                if(follower.getPose().getX() < 17) {
+                    follower.followPath(path4);
+                    curAct = 17;
+                }
+                break;
+            case 17:
+                if(follower.getPose().getX() > 65) {
+                    follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x);
+                    curAct = 0;
+                }
+                break;
+            case 18:
+                follower.setPose(scorePose);
+                follower.followPath(path5);
+                curAct = 19;
+                break;
+            case 19:
+                if(follower.getPose().getY() < (30)) {
+                    lower.release();
+                    lowerGrabPos = 0.5;
+                    curAct = 0;
+                }
+                break;
+            case 20:
+                if(follower.getPose().getX() < (13.5)) {
+                    follower.startTeleopDrive();
+                    curAct = 0;
+                }
                 break;
                 /*
             case 14:
@@ -256,10 +349,15 @@ public class TeleOpEnhancements extends OpMode {
         if(upper.getHeight() < 15 && !upper.isUp()) upper.off();
         if(lower.getPosition() > -50 && !lower.out()) lower.bottomon();
         if(gamepad1.dpad_left) { //Drive Enhancments
-            if(gamepad1.x && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.1) curAct = 1;
+            if(gamepad1.x && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.2) curAct = 1;
             if(gamepad1.a && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.1) curAct = 8;
-        } else {
-            if(gamepad1.x && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.1) curAct = 6;
+        } else if (gamepad1.dpad_right){
+            if (gamepad1.a) curAct = 18;
+
+        }
+
+        else {
+            if(gamepad1.x && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.2) curAct = 6;
             if(gamepad1.b && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.1) curAct = 11;
             if (gamepad1.a) curAct = 5;
         }
@@ -269,6 +367,7 @@ public class TeleOpEnhancements extends OpMode {
 
         if(gamepad1.dpad_up && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.2) {
             if(lowerGrabPos < 1) {
+
                 lowerGrabPos+=0.5;
                 actionTimer = opmodeTimer.getElapsedTimeSeconds();
             }
@@ -280,26 +379,38 @@ public class TeleOpEnhancements extends OpMode {
                 actionTimer = opmodeTimer.getElapsedTimeSeconds();
             }
         }
+        if(lower.getPosition() > 1850){
+            if(gamepad1.dpad_up){
+                lower.runTo1850();
+                autoRetract = true;
+                lowerGrabPos = 0.5;
+            } else {
+                lowerGrabPos = 0;
+            }
+        } else {
+            autoRetract = false;
+        }
+
         lower.wristPos(lowerGrabPos);
 
 
         if(gamepad1.y){
-            lower.wristUp();
+            curAct = 14;
         }
 
         if (gamepad1.right_stick_button && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.35) {
             curAct = 13;
         }
 
-        if (gamepad1.left_trigger > .1 && lower.getPosition() > -1800) {
+        if (gamepad1.left_trigger > .1 ){//&& lower.getPosition() > -1800) {
             lower.extend(gamepad1.left_trigger);
-        } else if (gamepad1.right_trigger > .1 ) {
+        } else if (gamepad1.right_trigger > .1 && lower.getPosition() <  2000) {
             lower.retract(gamepad1.right_trigger);
         } /*else if (gamepad1.left_bumper && lower.getPosition() > -1800) {
             lower.slowExtend();
         } else if (gamepad1.right_bumper) {
             lower.slowRetract();
-        } */else {
+        } */else if (!autoRetract){
             lower.bottomoff();
         }
 
@@ -338,6 +449,11 @@ public class TeleOpEnhancements extends OpMode {
         telemetry.addData("curAct", curAct);
         telemetry.addData("Height", upper.getHeight());
         telemetry.addData("Feedforward", feedforward);
+        telemetry.addData("X", follower.getPose().getX());
+        telemetry.addData("Y", follower.getPose().getY());
+        telemetry.addData("Heading", follower.getPose().getHeading());
+        telemetry.addData("Lower Encoder", lower.getPosition());
+
 
     }
 

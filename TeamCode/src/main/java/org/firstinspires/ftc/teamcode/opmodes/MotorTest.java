@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -57,7 +58,7 @@ public class MotorTest extends LinearOpMode {
         double oldRev = 0;
 
         // Define and Initialize Motors
-        one = hardwareMap.get(DcMotor.class, "one");
+        one = hardwareMap.get(DcMotor.class, "frontLeft");
 
         // Reset the motor encoder so that it reads zero ticks
         one.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

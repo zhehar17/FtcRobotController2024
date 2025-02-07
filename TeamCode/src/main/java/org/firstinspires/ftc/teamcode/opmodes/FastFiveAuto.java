@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
@@ -18,7 +19,7 @@ import org.firstinspires.ftc.teamcode.subsystems.PositionSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.UpperSubsystem;
 
 import java.util.Arrays;
-
+@Disabled
 @Autonomous(name = "FastFiveAuto", group = "Autonomous")
 public class FastFiveAuto extends OpMode {
 

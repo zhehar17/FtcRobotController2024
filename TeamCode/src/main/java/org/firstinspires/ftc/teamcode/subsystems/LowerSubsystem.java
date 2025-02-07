@@ -45,12 +45,12 @@ public class LowerSubsystem {
     }
 
     public void extend(double power){
-        lower.setPower(-power);
+        lower.setPower(-power*0.7);
         out = true;
     }
 
     public void retract(double power){
-        lower.setPower(power);
+        lower.setPower(power*0.7);
         out = false;
     }
 
@@ -89,6 +89,18 @@ public class LowerSubsystem {
 
     public boolean closed() {
         return grabber.getPosition() == 0.62;
+    }
+
+    public void runTo1850() {
+
+        if (getPosition() > 1860) {
+            retract(0.5);
+        } else if (getPosition() < 1840) {
+            extend(0.5);
+        } else {
+            bottomoff();
+        }
+
     }
 
 }
