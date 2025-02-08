@@ -14,6 +14,5 @@ public class RobotConstants {
 
     public static double distBetweenSensors = 5;
     public static double sensorToCenter = 7.8125;
-
     public static double submersiblePosition = 50;
 }
