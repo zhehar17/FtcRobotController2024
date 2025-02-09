@@ -170,7 +170,7 @@ public class TeleOpEnhancements extends OpMode {
     private double actionTimer;
 
 
-    private boolean feedforward = false;
+    //private boolean feedforward = false;
     private boolean autoRetract = false;
 
     /* Tele Enhancements
@@ -200,7 +200,7 @@ public class TeleOpEnhancements extends OpMode {
             case 3:
                 if(upper.getHeight() > 485){
                     upper.stayUp();
-                    feedforward = true;
+                    //feedforward = true;
                     curAct = 4;
                 }
                 break;
@@ -321,7 +321,35 @@ public class TeleOpEnhancements extends OpMode {
                     curAct = 0;
                 }
                 break;
+            case 21:
+                follower.setPose(startPose);
+                claw.closeClaw();
+                timer = opmodeTimer.getElapsedTimeSeconds();
+                actionTimer = opmodeTimer.getElapsedTimeSeconds();
+                curAct = 22;
+            break;
+            case 22:
+                if(claw.isClosed() && opmodeTimer.getElapsedTimeSeconds() - timer > 0.35) { //0.35
+                    upper.goUp();
+                    //stepTimes[curStep++] = opmodeTimer.getElapsedTimeSeconds();
+                    follower.followPath(path1, true);
+                    curAct = 23;
+                }
+                break;
+            case 23:
+                if(upper.getHeight() > 485){
+                    upper.stayUp();
+                    //feedforward = true;
+                    curAct = 24;
+                }
+                break;
+            case 24:
+                if(follower.getPose().getX() > (37)) {
+                    curAct = 8;
+                }
+                break;
                 /*
+
             case 14:
                 if(opmodeTimer.getElapsedTimeSeconds() - timer > 0.2) {
                     curAct = 0;
@@ -353,6 +381,7 @@ public class TeleOpEnhancements extends OpMode {
             if(gamepad1.a && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.1) curAct = 8;
         } else if (gamepad1.dpad_right){
             if (gamepad1.a) curAct = 18;
+            if (gamepad1.x) curAct = 21;
 
         }
 
@@ -448,7 +477,7 @@ public class TeleOpEnhancements extends OpMode {
 
         telemetry.addData("curAct", curAct);
         telemetry.addData("Height", upper.getHeight());
-        telemetry.addData("Feedforward", feedforward);
+        //telemetry.addData("Feedforward", feedforward);
         telemetry.addData("X", follower.getPose().getX());
         telemetry.addData("Y", follower.getPose().getY());
         telemetry.addData("Heading", follower.getPose().getHeading());
