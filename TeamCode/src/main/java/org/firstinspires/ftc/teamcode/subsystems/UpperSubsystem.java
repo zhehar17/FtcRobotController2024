@@ -53,6 +53,11 @@ public class UpperSubsystem {
         upper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
-
+    public void forceUp(){
+        upper.setPower(1);
+    }
+    public void forceDown(){
+        upper.setPower(-1);
+    }
 }
 

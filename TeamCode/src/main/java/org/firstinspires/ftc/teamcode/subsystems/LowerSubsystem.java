@@ -37,7 +37,7 @@ public class LowerSubsystem {
         lower.setPower(0);
     }
     public void bottomon(){
-        lower.setPower(-0.05);
+        lower.setPower(0.02);
     }
 
     public double getPosition(){
@@ -93,9 +93,9 @@ public class LowerSubsystem {
 
     public void runTo1850() {
 
-        if (getPosition() > 1860) {
+        if (getPosition() < -1860) {
             retract(0.5);
-        } else if (getPosition() < 1840) {
+        } else if (getPosition() > -1840) {
             extend(0.5);
         } else {
             bottomoff();

@@ -134,7 +134,7 @@ public class TeleOpEnhancements extends OpMode {
     @Override
     public void init() {
         follower = new Follower(hardwareMap);
-        follower.setStartingPose(startPose);
+        follower.setStartingPose(scorePose);
         buildPaths();
 
         claw = new ClawSubsystem(hardwareMap);
@@ -198,7 +198,7 @@ public class TeleOpEnhancements extends OpMode {
                 }
                 break;
             case 3:
-                if(upper.getHeight() > 485){
+                if(upper.getHeight() > 475){
                     upper.stayUp();
                     //feedforward = true;
                     curAct = 4;
@@ -265,7 +265,7 @@ public class TeleOpEnhancements extends OpMode {
                 curAct = 12;
                 break;
             case 12:
-                if(upper.getHeight() > 485){
+                if(upper.getHeight() > 475){
                     upper.stayUp();
                     curAct = 0;
                 }
@@ -337,7 +337,7 @@ public class TeleOpEnhancements extends OpMode {
                 }
                 break;
             case 23:
-                if(upper.getHeight() > 485){
+                if(upper.getHeight() > 475){
                     upper.stayUp();
                     //feedforward = true;
                     curAct = 24;
@@ -377,11 +377,18 @@ public class TeleOpEnhancements extends OpMode {
         if(upper.getHeight() < 15 && !upper.isUp()) upper.off();
         if(lower.getPosition() > -50 && !lower.out()) lower.bottomon();
         if(gamepad1.dpad_left) { //Drive Enhancments
-            if(gamepad1.x && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.2) curAct = 1;
+            if(gamepad1.x && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.2){
+                pivotDouble = 0.62;
+                curAct = 1;
+
+            }
             if(gamepad1.a && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.1) curAct = 8;
         } else if (gamepad1.dpad_right){
             if (gamepad1.a) curAct = 18;
-            if (gamepad1.x) curAct = 21;
+            if (gamepad1.x){
+                pivotDouble = 0.62;
+                curAct = 21;
+            }
 
         }
 
@@ -408,7 +415,8 @@ public class TeleOpEnhancements extends OpMode {
                 actionTimer = opmodeTimer.getElapsedTimeSeconds();
             }
         }
-        if(lower.getPosition() > 1850){
+        /*
+        if(lower.getPosition() < -1850){
             if(gamepad1.dpad_up){
                 lower.runTo1850();
                 autoRetract = true;
@@ -418,7 +426,7 @@ public class TeleOpEnhancements extends OpMode {
             }
         } else {
             autoRetract = false;
-        }
+        }*/
 
         lower.wristPos(lowerGrabPos);
 
@@ -431,9 +439,9 @@ public class TeleOpEnhancements extends OpMode {
             curAct = 13;
         }
 
-        if (gamepad1.left_trigger > .1 ){//&& lower.getPosition() > -1800) {
+        if (gamepad1.left_trigger > .1 && lower.getPosition() > -1750){//&& lower.getPosition() > -1800) {
             lower.extend(gamepad1.left_trigger);
-        } else if (gamepad1.right_trigger > .1 && lower.getPosition() <  2000) {
+        } else if (gamepad1.right_trigger > .1 ) {
             lower.retract(gamepad1.right_trigger);
         } /*else if (gamepad1.left_bumper && lower.getPosition() > -1800) {
             lower.slowExtend();
@@ -467,6 +475,12 @@ public class TeleOpEnhancements extends OpMode {
                 upper.goUp();
             }
         }*/
+        if(gamepad2.back) follower.setStartingPose(scorePose);
+        if(gamepad2.y) upper.forceUp();
+        if(gamepad2.a) upper.forceDown();
+        if(gamepad2.b) upper.off();
+        if(gamepad2.x) upper.resetEncoder();
+
         if (gamepad1.left_stick_button) {
             follower.setTeleOpMovementVectors(-gamepad1.left_stick_y/2, -gamepad1.left_stick_x/2, -gamepad1.right_stick_x/2, false);
         } else {
@@ -482,6 +496,7 @@ public class TeleOpEnhancements extends OpMode {
         telemetry.addData("Y", follower.getPose().getY());
         telemetry.addData("Heading", follower.getPose().getHeading());
         telemetry.addData("Lower Encoder", lower.getPosition());
+        telemetry.addData("Pivot Pos", pivotDouble);
 
 
     }
