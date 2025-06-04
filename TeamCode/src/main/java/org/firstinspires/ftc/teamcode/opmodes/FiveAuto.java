@@ -32,7 +32,7 @@ public class FiveAuto extends OpMode {
 
     public ClawSubsystem claw;
     public UpperSubsystem upper;
-    public PositionSubsystem pos;
+    //public PositionSubsystem pos;
     public LowerSubsystem lower;
 
     /** Create and Define Poses + Paths
@@ -598,7 +598,7 @@ public class FiveAuto extends OpMode {
 
         claw = new ClawSubsystem(hardwareMap);
         upper = new UpperSubsystem(hardwareMap);
-        pos = new PositionSubsystem(hardwareMap);
+        //pos = new PositionSubsystem(hardwareMap);
         lower = new LowerSubsystem(hardwareMap);
 
         lower.bottomon();
