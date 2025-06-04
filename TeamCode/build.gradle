@@ -38,4 +38,5 @@ dependencies {
 
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.4.21'
+    implementation 'com.google.ar:core:1.49.0'
 }
