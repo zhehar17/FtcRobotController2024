@@ -83,13 +83,13 @@ public class MiddlePickupTest extends LinearOpMode
          *        .setErodeSize(int pixels)   Erosion removes floating pixels and thin lines so that only substantive objects remain.
          *                                    Erosion can grow holes inside regions, and also shrink objects.
          *                                    "pixels" in the range of 2-4 are suitable for low res images.
-         *        .setDilateSize(int pixels)  Dilation makes objects more visible by filling in small holes, making lines appear thicker,
+         *        .setDilateSize(int pixels)  Dilation makes objects mor e visible by filling in small holes, making lines appear thicker,
          *                                    and making filled shapes appear larger. Dilation is useful for joining broken parts of an
          *                                    object, such as when removing noise from an image.
          *                                    "pixels" in the range of 2-4 are suitable for low res images.
          */
         ColorBlobLocatorProcessor colorLocator = new ColorBlobLocatorProcessor.Builder()
-                .setTargetColorRange(ColorRange.BLUE)         // use a predefined color match
+                .setTargetColorRange(ColorRange.RED)         // use a predefined color match
                 .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)    // exclude blobs inside blobs
                 .setRoi(ImageRegion.asUnityCenterCoordinates(-1, 1, 1, -1))  // search central 1/4 of camera view
                 .setDrawContours(true)                        // Show contours on the Stream Preview
@@ -145,7 +145,7 @@ public class MiddlePickupTest extends LinearOpMode
              *   A blob's Aspect ratio is the ratio of boxFit long side to short side.
              *   A perfect Square has an aspect ratio of 1.  All others are > 1
              */
-            ColorBlobLocatorProcessor.Util.filterByArea(50, 20000, blobs);  // filter out very small blobs.
+            ColorBlobLocatorProcessor.Util.filterByArea(10000, 75000, blobs);  // filter out very small blobs.
 
             /*
              * The list of Blobs can be sorted using the same Blob attributes as listed above.
@@ -179,7 +179,8 @@ public class MiddlePickupTest extends LinearOpMode
                 telemetry.addLine("x: "+ boxCorners[1].x + " y: "+ boxCorners[1].y); //botleft
                 telemetry.addLine("x: "+ boxCorners[2].x + " y: "+ boxCorners[2].y); //botright
                 telemetry.addLine("x: "+ boxCorners[3].x + " y: "+ boxCorners[3].y); //topright
-                telemetry.addLine("" + (neg * Math.atan((boxCorners[0].y - boxCorners[i].y)/(boxCorners[0].x-boxCorners[i].x)))); //shorter side
+                telemetry.addLine("" + Math.abs((neg * Math.atan((boxCorners[0].y - boxCorners[i].y)/(boxCorners[0].x-boxCorners[i].x))))); //shorter side
+                telemetry.addLine("Pivot pos"+ ((Math.abs((neg * Math.atan((boxCorners[0].y - boxCorners[i].y)/(boxCorners[0].x-boxCorners[i].x))))) > 3*Math.PI/8 ? 0.6 : 0.26));
             }
 
             telemetry.update();

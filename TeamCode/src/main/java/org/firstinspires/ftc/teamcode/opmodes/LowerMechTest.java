@@ -135,14 +135,6 @@ public class LowerMechTest extends LinearOpMode {
          *  or
          *      .setCamera(BuiltinCameraDirection.BACK)    ... for a Phone Camera
          */
-        VisionPortal portal = new VisionPortal.Builder()
-                .addProcessor(colorLocator)
-                .setCameraResolution(new Size(320, 240))
-                .setCamera(hardwareMap.get(WebcamName.class, "cam"))
-                .build();
-
-        telemetry.setMsTransmissionInterval(50);   // Speed up telemetry updates, Just use for debugging.
-        telemetry.setDisplayFormat(Telemetry.DisplayFormat.MONOSPACE);
 
         // WARNING:  To be able to view the stream preview on the Driver Station, this code runs in INIT mode.
 

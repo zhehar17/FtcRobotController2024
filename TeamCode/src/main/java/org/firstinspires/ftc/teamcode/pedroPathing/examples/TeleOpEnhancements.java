@@ -39,22 +39,52 @@ import org.firstinspires.ftc.teamcode.subsystems.UpperSubsystem;
 @TeleOp(name = "Pedro Pathing TeleOp Enhancements", group = "Test")
 public class TeleOpEnhancements extends OpMode {
     private final Pose startPose = new Pose(10.875, 28.935, Math.toRadians(180));
-    private final Pose scorePose = new Pose(37.631, 73.500, Math.toRadians(0));
+    private final Pose scorePose = new Pose(10,33,Math.toRadians(0));//(37.631, 73.500, Math.toRadians(0));
 
     private final Pose sidePose = new Pose(68.000, 48.000, Math.toRadians(90));
     private Follower follower;
     public UpperSubsystem upper;
     public ClawSubsystem claw;
     public LowerSubsystem lower;
+    double wristpos = 0.5;
+    double armpos = 0.26;
+
+    boolean extended;
 
     private DcMotorEx leftFront;
     private DcMotorEx leftRear;
     private DcMotorEx rightFront;
     private DcMotorEx rightRear;
 
-    private PathChain path1, path2, path3, path4, path5;
+    private PathChain pathx, path1, path2, path3, path4, path5;
     private Timer opmodeTimer;
     public void buildPaths() {
+        pathx = follower.pathBuilder()
+                .addPath(
+                        // Line 1
+                        new BezierLine(
+                                new Point(10.000, 33.000, Point.CARTESIAN),
+                                new Point(30.000, 70.000, Point.CARTESIAN)
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                .addPath(
+                        // Line 2
+                        new BezierLine(
+                                new Point(30.000, 70.000, Point.CARTESIAN),
+                                new Point(40.000, 70.000, Point.CARTESIAN)
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                .addPath(
+                        // Line 3
+                        new BezierLine(
+                                new Point(40.000, 70.000, Point.CARTESIAN),
+                                new Point(30.000, 70.000, Point.CARTESIAN)
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                .build();
         path1 = follower.pathBuilder() //pickup to score
                 .addPath(
                         // Line 1
@@ -153,13 +183,16 @@ public class TeleOpEnhancements extends OpMode {
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         curAct = 0;
-        pivotDouble = 0.5;
+        pivotDouble = 0.26;
         lowerGrabPos = 1;
         follower.startTeleopDrive();
+        lower.setInches(0);
+        extended = false;
+        lower.wristPos(1);
+        lower.release();
 
         opmodeTimer = new Timer();
         opmodeTimer.resetTimer();
-        claw.openClaw();
     }
 
     /**
@@ -183,26 +216,90 @@ public class TeleOpEnhancements extends OpMode {
             case 0:
                 break;
             case 1:
+                if (lower.getPivotPosition() == .6) {
+                    curAct = 3;
+                } else {
+                    curAct = 2;
+                }
+                lower.wristPos(0);
+                timer = opmodeTimer.getElapsedTimeSeconds();
+                break;
+            case 2:
+                if (opmodeTimer.getElapsedTimeSeconds() - timer > .35) {
+                    lower.grab();
+                    curAct = 5;
+                    timer = opmodeTimer.getElapsedTimeSeconds();
+                }
+                break;
+            case 3:
+                if (opmodeTimer.getElapsedTimeSeconds() - timer > .35) {
+                    lower.setPivot(0.55);
+                    timer = opmodeTimer.getElapsedTimeSeconds();
+                    curAct = 4;
+                }
+                break;
+            case 4:
+                if (opmodeTimer.getElapsedTimeSeconds() - timer > .4) {
+                    lower.grab();
+                    timer = opmodeTimer.getElapsedTimeSeconds();
+                    curAct = 5;
+                }
+                break;
+            case 5:
+                if (opmodeTimer.getElapsedTimeSeconds() - timer > .36) {
+                    lower.wristPos(.5);
+                    lower.setPivot(.26);
+                    lower.setInches(0);
+                    extended = false;
+                    curAct = 0;
+                }
+                break;
+            case 6:
+                upper.closeClaw();
+                timer = opmodeTimer.getElapsedTimeSeconds();
+                curAct = 7;
+                break;
+            case 7:
+                if (opmodeTimer.getElapsedTimeSeconds() - timer > .3) {
+                    upper.up();
+                    follower.setPose(scorePose);
+                    follower.followPath(pathx);
+                    curAct = 8;
+                }
+                break;
+            case 8:
+                if (follower.getPose().getX() > 39) {
+                    upper.score();
+                    curAct = 9;
+                }
+                break;
+            case 9:
+                if (follower.getPose().getX() < 37) {
+                    upper.pickup();
+                    follower.startTeleopDrive();
+                    curAct = 0;
+                }
+                break;
+
+
+
+                /*
+            case 1:
                 follower.setPose(startPose);
-                claw.closeClaw();
+                //claw.closeClaw();
                 timer = opmodeTimer.getElapsedTimeSeconds();
                 actionTimer = opmodeTimer.getElapsedTimeSeconds();
                 curAct = 2;
                 break;
             case 2:
                 if(claw.isClosed() && opmodeTimer.getElapsedTimeSeconds() - timer > 0.35) { //0.35
-                    upper.goUp();
+                    //upper.goUp();
                     //stepTimes[curStep++] = opmodeTimer.getElapsedTimeSeconds();
                     follower.followPath(path1);
-                    curAct = 3;
+                    curAct = 4;
                 }
                 break;
             case 3:
-                if(upper.getHeight() > 475){
-                    upper.stayUp();
-                    //feedforward = true;
-                    curAct = 4;
-                }
                 break;
             case 4:
                 if(follower.getPose().getX() > (37)) {
@@ -210,20 +307,12 @@ public class TeleOpEnhancements extends OpMode {
                     follower.startTeleopDrive();
                     follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x);
                     curAct = 0;
-                    feedforward = false;*/
+                    feedforward = false;*//*
                     follower.startTeleopDrive();
                     curAct = 0;
                 }
                 break;
             case 5:
-                if(upper.getHeight() > RobotConstants.barHeight) {
-                    upper.scoreDown();
-
-                }
-                else {
-                    claw.openClaw();
-                    curAct = 0;
-                }
                 break;
             case 6: //Close claw
                 if (claw.isClosed()) claw.openClaw();
@@ -240,14 +329,9 @@ public class TeleOpEnhancements extends OpMode {
                 follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x);
                 break;
             case 8:
-                if(upper.getHeight() > RobotConstants.barHeight) {
-                    upper.scoreDown();
-                }
-                else {
-                    claw.openClaw();
-                    actionTimer = opmodeTimer.getElapsedTimeSeconds();
-                    curAct = 9;
-                }
+                claw.openClaw();
+                actionTimer = opmodeTimer.getElapsedTimeSeconds();
+                curAct = 9;
                 break;
             case 9:
                 follower.setPose(scorePose);
@@ -261,14 +345,8 @@ public class TeleOpEnhancements extends OpMode {
                 }
                 break;
             case 11:
-                upper.goUp();
-                curAct = 12;
-                break;
-            case 12:
-                if(upper.getHeight() > 475){
-                    upper.stayUp();
-                    curAct = 0;
-                }
+                upper.up();
+                curAct = 13;
                 break;
             case 13: //Close lower claw
                 if (lower.closed()) lower.release();
@@ -329,25 +407,33 @@ public class TeleOpEnhancements extends OpMode {
                 curAct = 22;
             break;
             case 22:
-                if(claw.isClosed() && opmodeTimer.getElapsedTimeSeconds() - timer > 0.35) { //0.35
-                    upper.goUp();
+                if(opmodeTimer.getElapsedTimeSeconds() - timer > 0.35) { //0.35
+                    upper.up();
                     //stepTimes[curStep++] = opmodeTimer.getElapsedTimeSeconds();
                     follower.followPath(path1, true);
                     curAct = 23;
                 }
                 break;
             case 23:
-                if(upper.getHeight() > 475){
-                    upper.stayUp();
-                    //feedforward = true;
-                    curAct = 24;
-                }
+                curAct = 24;
                 break;
             case 24:
                 if(follower.getPose().getX() > (37)) {
                     curAct = 8;
                 }
                 break;
+            case 25:
+                upper.score();
+                timer = opmodeTimer.getElapsedTimeSeconds();
+                curAct = 26;
+                break;
+            case 26:
+                if(opmodeTimer.getElapsedTimeSeconds() - timer > 0.2) {
+                    curAct = 0;
+
+                }
+                break;*/
+
                 /*
 
             case 14:
@@ -374,8 +460,7 @@ public class TeleOpEnhancements extends OpMode {
     @Override
     public void loop() {
 
-        if(upper.getHeight() < 15 && !upper.isUp()) upper.off();
-        if(lower.getPosition() > -50 && !lower.out()) lower.bottomon();
+        /*
         if(gamepad1.dpad_left) { //Drive Enhancments
             if(gamepad1.x && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.2){
                 pivotDouble = 0.62;
@@ -397,10 +482,6 @@ public class TeleOpEnhancements extends OpMode {
             if(gamepad1.b && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.1) curAct = 11;
             if (gamepad1.a) curAct = 5;
         }
-        /*if (gamepad1.y) {
-            curAct = 11;
-        }*/
-
         if(gamepad1.dpad_up && opmodeTimer.getElapsedTimeSeconds() - actionTimer > 0.2) {
             if(lowerGrabPos < 1) {
 
@@ -415,18 +496,6 @@ public class TeleOpEnhancements extends OpMode {
                 actionTimer = opmodeTimer.getElapsedTimeSeconds();
             }
         }
-        /*
-        if(lower.getPosition() < -1850){
-            if(gamepad1.dpad_up){
-                lower.runTo1850();
-                autoRetract = true;
-                lowerGrabPos = 0.5;
-            } else {
-                lowerGrabPos = 0;
-            }
-        } else {
-            autoRetract = false;
-        }*/
 
         lower.wristPos(lowerGrabPos);
 
@@ -439,33 +508,14 @@ public class TeleOpEnhancements extends OpMode {
             curAct = 13;
         }
 
-        if (gamepad1.left_trigger > .1 && lower.getPosition() > -1750){//&& lower.getPosition() > -1800) {
-            lower.extend(gamepad1.left_trigger);
-        } else if (gamepad1.right_trigger > .1 ) {
-            lower.retract(gamepad1.right_trigger);
-        } /*else if (gamepad1.left_bumper && lower.getPosition() > -1800) {
-            lower.slowExtend();
-        } else if (gamepad1.right_bumper) {
-            lower.slowRetract();
-        } */else if (!autoRetract){
-            lower.bottomoff();
-        }
-
         if(gamepad1.start){
             curAct = 0;
             follower.breakFollowing();
             follower.startTeleopDrive();
         }
 
-        if(gamepad1.left_bumper){
-            pivotDouble += 0.02;
-        } else if(gamepad1.right_bumper){
-            pivotDouble -= 0.02;
-        }
-        if(pivotDouble < 0)pivotDouble = 0;
-        if(pivotDouble > 1)pivotDouble = 1;
-        lower.setPivot(pivotDouble);
-        /*
+
+
         if (feedforward) {
             if (upper.getHeight() > 600) {
                 upper.smallDown();
@@ -475,29 +525,88 @@ public class TeleOpEnhancements extends OpMode {
                 upper.goUp();
             }
         }*/
-        if(gamepad2.back) follower.setStartingPose(scorePose);
-        if(gamepad2.y) upper.forceUp();
-        if(gamepad2.a) upper.forceDown();
-        if(gamepad2.b) upper.off();
-        if(gamepad2.x) upper.resetEncoder();
+        //if(gamepad1.back) follower.setStartingPose(scorePose);
+
+        if (gamepad1.y){
+            upper.pickup();
+        } else if(gamepad1.b){
+            upper.closeClaw();
+        } else if(gamepad1.a){
+            upper.up();
+        } else if(gamepad1.x){
+            upper.score();
+        }
+        if (gamepad1.left_trigger > .1 ){
+            lower.setInches(0);
+            extended = false;
+        }
+        if (gamepad1.right_trigger > .1){
+            lower.setInches(13.7);
+            lower.wristPos(0.5);
+            wristpos = 0.5;
+            extended = true;
+        }
+
+        if (gamepad1.back) curAct = 6;
+
+        /*
+        if(gamepad1.left_bumper){
+            pivotDouble += 0.02;
+        } else if(gamepad1.right_bumper){
+            pivotDouble -= 0.02;
+        }
+        if(pivotDouble < 0)pivotDouble = 0;
+        if(pivotDouble > 1)pivotDouble = 1;
+        lower.setPivot(pivotDouble);*/
+
+/*
+        if(gamepad1.left_bumper){
+            wristpos += 0.02;
+        } else if(gamepad1.right_bumper){
+            wristpos -= 0.02;
+        }upper.setWrist(wristpos);*/
+
+        /*
+        if(gamepad1.a){
+            armpos += 0.02;
+        } if(gamepad1.b){
+            armpos -= 0.02;
+        }upper.setArm(armpos);
+         //wrist 0.24 0.44drive in
+        if(gamepad1.y){
+            upper.closeClaw();
+        } else if(gamepad1.x){
+            upper.openClaw();
+        }*/
+
+        if(gamepad1.dpad_up)lower.wristPos(1);
+        else if(gamepad1.dpad_right)lower.wristPos(0.5);
+        if (gamepad1.dpad_down) curAct = 1;
+        if(gamepad1.dpad_left)lower.grab();
+        if(gamepad1.start)lower.release();
+
+        if (lower.seePiece() && extended) {
+            curAct = 1;
+        }
+
 
         if (gamepad1.left_stick_button) {
             follower.setTeleOpMovementVectors(-gamepad1.left_stick_y/2, -gamepad1.left_stick_x/2, -gamepad1.right_stick_x/2, false);
         } else {
-            follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
+            follower.setTeleOpMovementVectors(-gamepad1.left_stick_y/2, -gamepad1.left_stick_x/2, -gamepad1.right_stick_x/2, false);
         }
         telePathUpdate();
         follower.update();
 
         telemetry.addData("curAct", curAct);
-        telemetry.addData("Height", upper.getHeight());
         //telemetry.addData("Feedforward", feedforward);
+        telemetry.addData("Wrist", wristpos);
         telemetry.addData("X", follower.getPose().getX());
         telemetry.addData("Y", follower.getPose().getY());
         telemetry.addData("Heading", follower.getPose().getHeading());
-        telemetry.addData("Lower Encoder", lower.getPosition());
-        telemetry.addData("Pivot Pos", pivotDouble);
-
+        telemetry.addData("Pivot Pos", lower.getPivotPosition());
+        telemetry.addData("Arm Pos", armpos);
+        telemetry.addData("sees piece ", lower.seePiece());
 
     }
 

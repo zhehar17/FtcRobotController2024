@@ -66,6 +66,12 @@ public class UpperMechTest extends LinearOpMode {
 
     public Servo lower1 = null;
     public Servo lower2 = null;
+    public Servo upperpivot = null;
+    public Servo claw = null;
+
+    double clawpos = 0.5;
+
+    double pivot = 0.5;
     double pos1 = .5;
     double pos2 = .5;
 
@@ -73,6 +79,8 @@ public class UpperMechTest extends LinearOpMode {
     public void runOpMode() {
         lower1 = hardwareMap.get(Servo.class, "upper1"); //.35  to .65 in
         lower2 = hardwareMap.get(Servo.class, "upper2"); //.35 in to .65
+        upperpivot = hardwareMap.get(Servo.class, "upperpivot");
+        claw = hardwareMap.get(Servo.class, "claw");
         lower1.setPosition(pos1);
         lower2.setPosition(pos2);
 
@@ -87,13 +95,12 @@ public class UpperMechTest extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             if (gamepad1.right_bumper) {
-                pos1 = .65;
-                pos2 = .35;
+                clawpos = 0.3;
             }
             if (gamepad1.left_bumper) {
-                pos1 = .35;
-                pos2 = .65;
+                clawpos = 0.56;
             }
+            /*
             if (gamepad1.x) {
                 pos1 -= .01;
                 pos2 += .01;
@@ -109,14 +116,52 @@ public class UpperMechTest extends LinearOpMode {
             if (gamepad1.b) {
                 pos1 += .1;
                 pos2 -= .1;
+            }*/
+            if(gamepad1.y){
+                pos1 = 0.3;
+                pos2 = 1-pos1;
+                pivot = 0.48;
+                clawpos = 0.56;
+            } else if(gamepad1.b) {
+                clawpos= 0.3;
+            } else if(gamepad1.a){
+                pos1 = 0.86;
+                pos2 = 1-pos1;
+                pivot = 0.44;
+            } else if(gamepad1.x){
+                pos1 = 0.78;
+                pos2 = 1-pos1;
+                pivot = 0.44;
             }
 
+            if(gamepad1.dpad_up){
+                pivot += 0.02;
+            }
+            else if (gamepad1.dpad_down){
+                pivot -= 0.02;
+            } else if(gamepad1.dpad_left){
+                clawpos += 0.02;
+            } else if(gamepad1.dpad_right){
+                clawpos -= 0.02;
+            }
+            //claw 0.56 open
+            //claw 0.3 close
+            //pickup wrist 0.48
+            //pos1 0.3
+            //pos1 0.86
+            //pivot 0.44
+            //pos1 0.78
 
-            lower1.setPosition(Math.max(Math.min(pos1, 1), 0));
-            lower2.setPosition(Math.max(Math.min(pos2, 1), 0));
+
+
+
+
+
 
             telemetry.addLine("pos1 " + pos1);
             telemetry.addLine("pos2 " + pos2);
+            telemetry.addLine("upper pivot" + pivot);
+            telemetry.addLine("claw" + clawpos);
             telemetry.update();
             sleep(100);
         }
